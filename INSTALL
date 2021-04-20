@@ -15,5 +15,3 @@ mamba env create -f ENVS/illumina.yml
 mamba env create -f ENVS/minion-qc.yml
 
 mamba env create -f ENVS/minion.yml
-
-mamba env create -f ENVS/rampart.yml

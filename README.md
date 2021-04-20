@@ -42,17 +42,6 @@ sample01A,BC01,nCoV-2019/ARTIC_V3
 sample01B,BC02,nCoV-2019/ARTIC_V3
 sample01,BC01-BC02,nCoV-2019/ARTIC_V3
 ```
-	
-#### RAMPART script for MinION real-time analysis -- it requires 2 parameters:
-
-- The PATH to the csv file.
-- The PATH to the directory containing the fastq pass files obtained from MinKNOW fast basecalling during the sequencing.
-
-Then run the script using:
-
-```sh
-RAMPART $HOME/WGS/CSV_FILES/LIBRARY01_20210123.csv $HOME/WGS/RAW/LIBRARY01_20210123/../fastq_pass
-```
 
 #### MINION script for genome assembly -- it requires 2 parameters:
 
