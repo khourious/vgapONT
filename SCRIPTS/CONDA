@@ -1,6 +1,6 @@
 #!/bin/bash
 
-[ -d "$HOME/miniconda3" ] && rm -rf $HOME/miniconda3
+[ -d "$HOME/miniconda3" ] && rm -rf $HOME/miniconda3 $HOME/.conda*
 
 cd
 
