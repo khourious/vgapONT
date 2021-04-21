@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# based on the CADDE/USP script
+# based on the structure of the CADDE/USP script
 
 primerscheme="$1"
 
@@ -14,42 +14,55 @@ primer="$(echo "$primerscheme" | cut -d/ -f2)"
 
 threads="12"
 
-[ ! -d $HOME/WGS/LIBRARIES ] && mkdir $HOME/WGS/LIBRARIES
+echo "" && echo "ILLUMINA ASSEMBLY PIPELINE" && echo ""
+
+[ ! -d $HOME/WGS/LIBRARIES ] && mkdir $HOME/WGS/LIBRARIES -v
 
 [ -d $HOME/WGS/LIBRARIES/"$library" ] && rm -rf -d $HOME/WGS/LIBRARIES/"$library"
 
-mkdir $HOME/WGS/LIBRARIES/"$library"
+mkdir $HOME/WGS/LIBRARIES/"$library" -v
 
-mkdir $HOME/WGS/LIBRARIES/"$library"/ANALYSIS
+mkdir $HOME/WGS/LIBRARIES/"$library"/ANALYSIS -v
 
-mkdir $HOME/WGS/LIBRARIES/"$library"/CONSENSUS
+mkdir $HOME/WGS/LIBRARIES/"$library"/CONSENSUS -v
 
-mkdir $HOME/WGS/LIBRARIES/"$library"/FASTQC
+mkdir $HOME/WGS/LIBRARIES/"$library"/FASTQC -v
+
+echo ""
 
 cd $HOME/WGS/RAW/"$library"
 
-for i in $(find ./ -type f -name "*.fastq.gz"); do cp "$i" ../LIBRARIES/"$library"/ANALYSIS; done
+for i in $(find ./ -type f -name "*.fastq.gz"); do cp "$i" ../../LIBRARIES/"$library"/ANALYSIS -v; done
 
-cd ../LIBRARIES/"$library"/ANALYSIS
+cd ../../LIBRARIES/"$library"/ANALYSIS
 
-for i in $(find ./ -type f -name "*R1*.fastq.gz" -exec basename {} \;); do mv "$i" "$(echo "$i" | rev | cut -c 25- | rev)_R1.fastq.gz"; done
+echo ""
 
-for i in $(find ./ -type f -name "*R2*.fastq.gz" -exec basename {} \;); do mv "$i" "$(echo "$i" | rev | cut -c 25- | rev)_R2.fastq.gz"; done
+for i in $(find ./ -type f -name "*R1*.fastq.gz" -exec basename {} \;); do mv "$i" "$(echo "$i" | rev | cut -c 25- | rev)_R1.fastq.gz" -v; done
+
+for i in $(find ./ -type f -name "*R2*.fastq.gz" -exec basename {} \;); do mv "$i" "$(echo "$i" | rev | cut -c 25- | rev)_R2.fastq.gz" -v; done
 
 source activate illumina
 
-fastqc -t "$threads" -q *.fastq.gz -o ../FASTQC
+echo "" && echo "FastQC analysis..."
 
-cp ../../../PRIMER_SCHEMES/"$primerscheme"/"$ref".reference.fasta "$ref".reference.fasta
+fastqc -t "$threads" *.fastq.gz -o ../FASTQC
 
-cp ../../../PRIMER_SCHEMES/"$primerscheme"/"$ref".score.bed "$ref".score.bed
+echo ""
+
+cp ../../../PRIMER_SCHEMES/"$primerscheme"/"$ref".reference.fasta "$ref".reference.fasta -v
+
+cp ../../../PRIMER_SCHEMES/"$primerscheme"/"$ref".score.bed "$ref".score.bed -v
 
 echo "Sample@Nb of reads mapped@Average depth coverage@Bases covered >10x@Bases covered >25x@Reference covered (%)" | tr '@' '\t' > "$library".stats.txt
+
+echo "" && echo "Building reference index..."
 
 bwa index "$ref".reference.fasta
 
 for i in $(find ./ -type f -name "*.fastq.gz" | while read o; do basename $o | cut -d_ -f1; done | sort | uniq)
 	do
+		echo "" && echo ""$i" assembly..."
 		bwa mem -t "$threads" "$ref".reference.fasta "$i"_R1.fastq.gz "$i"_R2.fastq.gz | samtools sort -@ "$threads" | samtools view -@ "$threads" -F 4 -o  "$i".mapped.sorted.bam
 		samtools index -@ "$threads" "$i".mapped.sorted.bam
 		ivar trim -e -i "$i".mapped.sorted.bam -b "$ref".score.bed -p "$i".trimmed
@@ -66,18 +79,20 @@ cat *.fa > "$library".fasta
 
 mafft --quiet --preservecase --thread "$threads" --reorder --6merpair --addfragments "$library".fasta 	"$ref".reference.fasta > "$library".consensus.fasta 
 
+echo "" && echo "Generating the depth plot..."
+
 plot_depth.py -t "$threads" --bams *.trimmed.sorted.bam -o "$library".depth.pdf -r "$ref".reference.fasta # https://github.com/ItokawaK/Alt_nCov2019_primers
 
 rm -rf "$ref".reference.fasta*
 
 rm -rf "$ref".score.bed
 
-mv "$library".consensus.fasta ../CONSENSUS
+echo ""
 
-mv "$library".stats.txt ../CONSENSUS
+mv "$library".consensus.fasta ../CONSENSUS -v
 
-mv "$library".depth.pdf ../CONSENSUS
+mv "$library".stats.txt ../CONSENSUS -v
 
-echo "########################"
-echo "####### Finish!! #######"
-echo "########################"
+mv "$library".depth.pdf ../CONSENSUS -v
+
+echo "" && echo "Done." && echo ""
