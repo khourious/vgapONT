@@ -9,7 +9,7 @@ dependencies:
   - exonerate
   - fastqc
   - ivar
-  - maff
+  - mafft
   - matplotlib
   - numpy
   - pandas
