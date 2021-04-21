@@ -16,4 +16,4 @@ bases_covered_x.sh "$sample".trimmed.sorted.bam 10 | awk '{printf $1"@"}' | tr '
 
 bases_covered_x.sh "$sample".trimmed.sorted.bam 25 | awk '{printf $1"@"}' | tr '@' '\t' >> "$library".stats.txt
 
-coverage.sh "$ref".reference.fasta "$sample".consensus.fa | awk '{print $2}' >> "$library".stats.txt
+coverage.sh "$ref".reference.fasta "$sample".fa | awk '{print $2}' >> "$library".stats.txt
