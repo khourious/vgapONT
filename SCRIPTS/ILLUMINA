@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# based on the structure of the CADDE/USP script
+exec &> $HOME/WGS/LIBRARIES/"$(basename "$2")"_log.txt
+
+start=$(date +%s.%N)
 
 primerscheme="$1"
 
@@ -79,10 +81,6 @@ cat *.fa > "$library".fasta
 
 mafft --quiet --preservecase --thread "$threads" --reorder --6merpair --addfragments "$library".fasta 	"$ref".reference.fasta > "$library".consensus.fasta 
 
-echo "" && echo "Generating the depth plot..."
-
-plot_depth.py -t "$threads" --bams *.trimmed.sorted.bam -o "$library".depth.pdf -r "$ref".reference.fasta # https://github.com/ItokawaK/Alt_nCov2019_primers
-
 rm -rf "$ref".reference.fasta*
 
 rm -rf "$ref".score.bed
@@ -93,6 +91,14 @@ mv "$library".consensus.fasta ../CONSENSUS -v
 
 mv "$library".stats.txt ../CONSENSUS -v
 
-mv "$library".depth.pdf ../CONSENSUS -v
+cd ../..
 
-echo "" && echo "Done." && echo ""
+echo "" && echo "Tar GZ packaging..."
+
+tar -czf "$library".tar.gz "$library"
+
+end=$(date +%s.%N)
+
+runtime=$(python -c "print(${end} - ${start})")
+
+echo "" && echo "Done. The runtime was $runtime seconds."
