@@ -1,6 +1,6 @@
-## Bioinformatic pipeline for whole genome sequencing using Illumina and MinION
+## Bioinformatic pipeline for whole genome sequencing using Illumina or MinION platform
 
-This repo contains scripts and files to run the bioinformatic analysis of whole genome sequencing using MinION and Illlumina platforms, and was built based on the [CADDE](https://www.caddecentre.org/) scripts and [ARTIC](https://artic.network/) bioinformatics workflow
+This repo contains scripts and files to run the bioinformatic analysis of whole genome sequencing using Illlumina or MinION platform, and was built based on the CADDE and ARTIC bioinformatics workflow.
 
 ---
 
