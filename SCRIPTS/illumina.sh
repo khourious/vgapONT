@@ -63,7 +63,7 @@ bwa index "$ref".reference.fasta
 for i in $(find ./ -type f -name "*.fastq.gz" | while read o; do basename $o | cut -d_ -f1; done | sort | uniq)
 	do
 		echo "" && echo ""$i" assembly..."
-		bwa mem -t "$threads" "$ref".reference.fasta "$i"_R1.fastq.gz "$i"_R2.fastq.gz | samtools sort -@ "$threads" | samtools view -@ "$threads" -F 4 -o  "$i".mapped.sorted.bam
+		bwa mem -t "$threads" "$ref".reference.fasta "$i"_R1.fastq.gz "$i"_R2.fastq.gz | samtools sort -@ "$threads" | samtools view -@ "$threads" -bS -F 4 -o  "$i".mapped.sorted.bam
 		samtools index -@ "$threads" "$i".mapped.sorted.bam
 		ivar trim -e -i "$i".mapped.sorted.bam -b "$ref".score.bed -p "$i".trimmed
 		samtools sort -@ "$threads" "$i".trimmed.bam -o "$i".trimmed.sorted.bam
@@ -72,12 +72,13 @@ for i in $(find ./ -type f -name "*.fastq.gz" | while read o; do basename $o | c
 		samtools depth "$i".trimmed.sorted.bam > "$i".depth
 		bcftools mpileup -A -B -Q 0 -f "$ref".reference.fasta "$i".trimmed.sorted.bam | bcftools call --threads "$threads" -mv --ploidy 1 -Oz -o "$i".vcf.gz
 		zcat "$i".vcf.gz > "$i".vcf
+		mafft --quiet --preservecase --thread "$threads" --6merpair --addfragments "$i".fasta "$ref".reference.fasta > "$i".mafft.fasta
+		samtools faidx "$i".mafft.fasta
+		samtools faidx "$i".mafft.fasta "$i" | sed '/^>/! s/[^ACTG]/N/g' >"$i".consensus.fasta
 		stats.sh "$i" "$library" "$ref" # CADDE/USP script
 	done
 
-cat *.fa > "$library".fasta
-
-mafft --quiet --preservecase --thread "$threads" --reorder --6merpair --addfragments "$library".fasta 	"$ref".reference.fasta > "$library".consensus.fasta 
+cat *.consensus.fasta > "$library".consensus.fasta
 
 rm -rf "$ref".reference.fasta*
 
