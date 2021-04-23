@@ -72,7 +72,7 @@ for i in $(find ./ -type f -name "*.fastq.gz" | while read o; do basename $o | c
 		samtools depth "$i".trimmed.sorted.bam > "$i".depth
 		bcftools mpileup -A -B -Q 0 -f "$ref".reference.fasta "$i".trimmed.sorted.bam | bcftools call --threads "$threads" -mv --ploidy 1 -Oz -o "$i".vcf.gz
 		zcat "$i".vcf.gz > "$i".vcf
-		mafft --quiet --preservecase --thread "$threads" --6merpair --addfragments "$i".fasta "$ref".reference.fasta > "$i".mafft.fasta
+		mafft --quiet --preservecase --thread "$threads" --6merpair --addfragments "$i".fa "$ref".reference.fasta > "$i".mafft.fasta
 		samtools faidx "$i".mafft.fasta
 		samtools faidx "$i".mafft.fasta "$i" | sed '/^>/! s/[^ACTG]/N/g' >"$i".consensus.fasta
 		stats.sh "$i" "$library" "$ref" # CADDE/USP script
