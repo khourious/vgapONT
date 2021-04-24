@@ -6,13 +6,13 @@ primerscheme="$1"
 
 raw="$2"
 
+threads="$3"
+
 library="$(basename "$raw")"
 
 ref="$(echo "$primerscheme" | cut -d/ -f1)"
 
 primer="$(echo "$primerscheme" | cut -d/ -f2)"
-
-threads="12"
 
 [ ! -d $HOME/WGS/LIBRARIES ] && mkdir $HOME/WGS/LIBRARIES -v
 

@@ -10,7 +10,4 @@ dependencies:
   - fastqc
   - ivar
   - mafft
-  - matplotlib
-  - numpy
-  - pandas
   - samtools
