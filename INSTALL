@@ -10,6 +10,8 @@ bash $HOME/bin/GUPPY
 
 bash $HOME/bin/CONDA
 
+mamba env create -f ENVS/depth.yml
+
 mamba env create -f ENVS/illumina.yml
 
 mamba env create -f ENVS/minion-qc.yml
