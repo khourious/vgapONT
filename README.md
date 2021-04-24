@@ -22,7 +22,7 @@ Assembly pipeline for WGS using Illumina
 Usage: ILLUMINA [-r RAWPATH] [-p PRIMERSCHEME] [-d] [-v]
 
 Options:
--r  The PATH to the directory containing the raw sequencing data downloaded from Illumina's BaseSpace Sequence Hub (fastq.gz files).
+-r  The PATH to the directory containing the raw sequencing data downloaded from Illumina BaseSpace Sequence Hub (fastq.gz files).
 -s  The prime scheme information (example: nCoV-2019/FIOCRUZ_2kb_v1 or nCoV-2019/ARTIC_V3)
 -d  Generates depth plots in sigle PDF file from multiple BAM files to briefly check coverages.
 -h  Display this help message.
