@@ -52,12 +52,12 @@ for i in $(find ./ -type f -name "*.fastq.gz" | while read o; do basename $o | c
 	do
 		bwa mem -t "$threads" "$ref".reference.fasta "$i"_R1.fastq.gz "$i"_R2.fastq.gz | samtools sort -@ "$threads" | samtools view -@ "$threads" -bS -F 4 -o  "$i".mapped.sorted.bam
 		samtools index -@ "$threads" "$i".mapped.sorted.bam
-		ivar trim -e -i "$i".mapped.sorted.bam -b "$ref".score.bed -p "$i".trimmed
-		samtools sort -@ "$threads" "$i".trimmed.bam -o "$i".trimmed.sorted.bam
-		samtools index -@ "$threads" "$i".trimmed.sorted.bam
-		samtools mpileup -A -B -Q 0 --reference "$ref".reference.fasta "$i".trimmed.sorted.bam | ivar consensus -p "$i" -n N -i "$i"
-		samtools depth "$i".trimmed.sorted.bam > "$i".depth
-		bcftools mpileup -A -B -Q 0 -f "$ref".reference.fasta "$i".trimmed.sorted.bam | bcftools call --threads "$threads" -mv --ploidy 1 -Oz -o "$i".vcf.gz
+		ivar trim -e -i "$i".mapped.sorted.bam -b "$ref".score.bed -p "$i".primertrimmed.rg
+		samtools sort -@ "$threads" "$i".primertrimmed.rg.bam -o "$i".primertrimmed.rg.sorted.bam
+		samtools index -@ "$threads" "$i".primertrimmed.rg.sorted.bam
+		samtools mpileup -A -B -Q 0 --reference "$ref".reference.fasta "$i".primertrimmed.rg.sorted.bam | ivar consensus -p "$i" -n N -i "$i"
+		samtools depth "$i".primertrimmed.rg.sorted.bam > "$i".depth
+		bcftools mpileup -A -B -Q 0 -f "$ref".reference.fasta "$i".primertrimmed.rg.sorted.bam | bcftools call --threads "$threads" -mv --ploidy 1 -Oz -o "$i".vcf.gz
 		zcat "$i".vcf.gz > "$i".vcf
 		mafft --quiet --preservecase --thread "$threads" --6merpair --addfragments "$i".fa "$ref".reference.fasta > "$i".mafft.fasta
 		samtools faidx "$i".mafft.fasta
