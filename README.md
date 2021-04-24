@@ -14,25 +14,25 @@ bash INSTALL
 ```
 ---
 
-### Illumina pipeline
+#### Illumina pipeline
 
-#### ILLUMINA script for genome assembly -- it requires 2 parameters:
-
-- The prime scheme information (example: nCoV-2019/FIOCRUZ_2kb_v1 or nCoV-2019/ARTIC_V3)
-- The PATH to the directory containing the raw sequencing data downloaded from Illumina's BaseSpace Sequence Hub (fastq.gz files).
-
-Then run the script using:
 ```sh
-ILLUMINA nCoV-2019/FIOCRUZ_2kb_v1 $HOME/WGS/RAW/LIBRARY01_20210123 
+Assembly pipeline for WGS using Illumina
+
+Usage: ILLUMINA [-r RAWPATH] [-p PRIMERSCHEME] [-d] [-v]
+
+Options:
+-r  The PATH to the directory containing the raw sequencing data downloaded from Illumina's BaseSpace Sequence Hub (fastq.gz files).
+-s  The prime scheme information (example: nCoV-2019/FIOCRUZ_2kb_v1 or nCoV-2019/ARTIC_V3)
+-d  Generates depth plots in sigle PDF file from multiple BAM files to briefly check coverages.
+-h  Display this help message.
 ```
 
 ---
 
-### MinION pipeline
+#### MinION pipeline
 
-#### Create the sample sheet
-
-Create a csv file in ``CSV_FILES`` directory -- the csv file name **corresponds to the library name**.
+Requires to create the sample sheet (.csv) in ``SAMPLE_SHEETS`` directory -- the csv file name **corresponds to the library name**.
 	
 The csv file contains this format: sample,barcode,virus_reference/version -- **NO HEADER!!**
 	
@@ -43,11 +43,14 @@ sample01B,BC02,nCoV-2019/ARTIC_V3
 sample01,BC01-BC02,nCoV-2019/ARTIC_V3
 ```
 
-#### MINION script for genome assembly -- it requires 2 parameters:
-
-- The PATH to the csv file.
-- The PATH to the directory containing the raw sequencing data (fast5 files).
-Then run the script using:
 ```sh
-MINION $HOME/WGS/CSV_FILES/LIBRARY01_20210123.csv $HOME/WGS/RAW/LIBRARY01_20210123 
+Assembly pipeline for WGS using Illumina
+
+Usage: ILLUMINA [-r RAWPATH] [-p PRIMERSCHEME] [-d] [-v]
+
+Options:
+-r  The PATH to the directory containing the raw sequencing data (fast5 files).
+-s  The PATH to the sample sheet (.csv) file.
+-d  Generates depth plots in sigle PDF file from multiple BAM files to briefly check coverages.
+-h  Display this help message.
 ```
