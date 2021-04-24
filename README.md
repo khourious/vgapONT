@@ -32,9 +32,9 @@ Options:
 
 #### MinION pipeline
 
-Requires to create the sample sheet (.csv) in ``SAMPLE_SHEETS`` directory;
+Requires to create the sample sheet (.csv) in ``SAMPLE_SHEETS`` directory.
 	
-The csv file name **corresponds to the library name** and contains this format: sample,barcode,virus_reference/version -- **NO HEADER!!**
+The csv file name **corresponds to the library name** and contains: sample,barcode,virus_reference/version and **NO HEADER!!**
 	
 You can combine pool A and B if they are on 2 different barcodes, by adding an extra line at the end of the csv file:
 ```sh
