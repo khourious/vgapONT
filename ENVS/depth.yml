@@ -1,0 +1,10 @@
+name: depth
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - matplotlib
+  - numpy
+  - pandas
+  - samtools
