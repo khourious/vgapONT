@@ -9,9 +9,9 @@ while getopts ":r:s:dt:g:c:h" opt; do
 		r ) RAWPATH="$OPTARG";;
 		s ) SAMPLESHEET="$OPTARG";;
 		d ) PLOTDEPTH=yes;;
-		t )  THREADS="$OPTARG";;
-		g )  CUDACORES="$OPTARG";;
-		c )  NUMCALLERS="$OPTARG";;
+		t ) THREADS="$OPTARG";;
+		g ) CUDACORES="$OPTARG";;
+		c ) NUMCALLERS="$OPTARG";;
 		h ) HELP=yes;;
 	esac
 done
@@ -25,7 +25,7 @@ Usage: $(basename $0) [-r RAWPATH] [-s SAMPLESHEET] [-d] [-t THREADS] [-g CUDACO
 Options:
 -r  The PATH to the directory containing the raw sequencing data (fast5 files).
 -s  The PATH to the sample sheet (.csv) file.
--d  Generates depth plots in sigle PDF file from multiple BAM files to briefly check coverages.
+-d  Generates depth plots in sigle PDF file from multiple BAM files to briefly check coverages [from ItokawaK/Alt_nCov2019_primers].
 -t  Number of tasks to process concurrently.
 -g  Number of GPU cuda cores [for guppy_basecaller].
 -c  Number of parallel basecallers to FAST5 file [for guppy_basecaller].

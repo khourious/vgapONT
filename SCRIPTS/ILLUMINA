@@ -5,7 +5,7 @@ while getopts ":r:s:dt:h" opt; do
 		r ) RAWPATH="$OPTARG";;
 		s ) PRIMERSCHEME="$OPTARG";;
 		d ) PLOTDEPTH=yes;;
-		t )  THREADS="$OPTARG";;
+		t ) THREADS="$OPTARG";;
 		h ) HELP=yes;;
 	esac
 done
@@ -19,7 +19,7 @@ Usage: $(basename $0) [-r RAWPATH] [-s PRIMERSCHEME] [-d] [-t THREADS] [-h]
 Options:
 -r  The PATH to the directory containing the raw sequencing data downloaded from Illumina's BaseSpace Sequence Hub (fastq.gz files).
 -s  The prime scheme information (example: nCoV-2019/FIOCRUZ_2kb_v1 or nCoV-2019/ARTIC_V3).
--d  Generates depth plots in sigle PDF file from multiple BAM files to briefly check coverages.
+-d  Generates depth plots in sigle PDF file from multiple BAM files to briefly check coverages [from ItokawaK/Alt_nCov2019_primers].
 -t  Num tasks to process concurrently.
 -h  Display this help message."
 	exit 1
