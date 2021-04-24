@@ -1,6 +1,6 @@
 ## Assembly pipeline for WGS using Illumina and MinION
 
-This repo contains scripts and files to run the bioinformatic analysis of whole genome sequencing using Illlumina or MinION platform, and was built based on the CADDE and ARTIC bioinformatics workflow.
+This repo contains scripts and files to run the bioinformatic analysis of whole genome sequencing using Illlumina or MinION platform.
 
 ---
 
