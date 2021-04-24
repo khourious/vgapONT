@@ -32,7 +32,7 @@ Options:
 
 #### MinION pipeline
 
-Requires to create the sample sheet (.csv) in ``SAMPLE_SHEETS`` directory.
+Requires to create the sample sheet (.csv). You can create in ``SAMPLE_SHEETS`` directory.
 	
 The csv file name **corresponds to the library name** and contains: sample,barcode,virus_reference/version and **NO HEADER!!**
 	
@@ -44,9 +44,9 @@ sample01,BC01-BC02,nCoV-2019/ARTIC_V3
 ```
 
 ```sh
-Assembly pipeline for WGS using Illumina
+Assembly pipeline for WGS using MinION
 
-Usage: ILLUMINA [-r RAWPATH] [-p PRIMERSCHEME] [-d] [-v]
+Usage: MINION [-r RAWPATH] [-p SAMPLESHEET] [-d] [-v]
 
 Options:
 -r  The PATH to the directory containing the raw sequencing data (fast5 files).
