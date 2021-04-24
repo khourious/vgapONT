@@ -1,6 +1,6 @@
 #!/bin/bash
 
-guppy_version=4.5.3
+guppy_version=4.5.4
 
 [ -d "$HOME/ont-guppy" ] && rm -rf $HOME/ont-guppy
 
