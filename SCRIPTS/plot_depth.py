@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# reference: https://github.com/ItokawaK/Alt_nCov2019_primers
+
 try:
     import matplotlib
     matplotlib.use('Agg')
@@ -705,7 +707,7 @@ def main(bam_files,
             align_stats = stats[i]
             meta_data = ['Total Seq: {:.1f} Mb'.format(align_stats[0]/1e6),
                          'Paired properly: {:.1%}'.format(align_stats[1])]
-            title = os.path.basename(bam_files[i]).rstrip('.trimmed.sorted.bam')
+            title = os.path.basename(bam_files[i]).rstrip('.primertrimmed.rg.sorted.bam')
             ax.set_title(title)
             set_plot_area(ax, max_hight=10000)
             tbl = depth_tbls[i]

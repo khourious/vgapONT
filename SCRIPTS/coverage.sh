@@ -1,3 +1,7 @@
+#!/bin/bash
+
+# modified CADDE/USP script
+
 reference="$1"
 
 consensus="$2"

@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# author: Laise de Moraes <laisepaixao@live.com>
+# institution: Universidade Federal da Bahia, Brazil
+# URL: https://github.com/lpmor22
+# date: 7 MAR 2021
+
 guppy_version=4.5.4
 
 [ -d "$HOME/ont-guppy" ] && rm -rf $HOME/ont-guppy
@@ -12,8 +17,8 @@ tar -vzxf ont-guppy.tar.gz
 
 rm -rf ont-guppy.tar.gz
 
-export PATH=$HOME/ont-guppy/bin:/usr/local/share/rsi/idl/bin:$PATH
-
 echo 'export PATH=$HOME/ont-guppy/bin:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.bashrc
 
 echo 'export PATH=$HOME/ont-guppy/bin:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.zshrc
+
+export PATH=$HOME/ont-guppy/bin:/usr/local/share/rsi/idl/bin:$PATH

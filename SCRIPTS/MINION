@@ -1,8 +1,9 @@
 #!/bin/bash
 
-CUDACORES="$4" # NVIDIAGeForceRTX2060=32; NVIDIAGeForceRTX2080=64
-
-NUMCALLERS="46" # NVIDIAGeForceRTX2060=60; NVIDIAGeForceRTX2080=46
+# author: Laise de Moraes <laisepaixao@live.com>
+# institution: Universidade Federal da Bahia, Brazil
+# URL: https://github.com/lpmor22
+# date: 24 APR 2021
 
 while getopts ":r:s:dt:g:c:" opt; do
 	case $opt in
@@ -10,8 +11,8 @@ while getopts ":r:s:dt:g:c:" opt; do
 		s ) SAMPLESHEET="$OPTARG";;
 		d ) PLOTDEPTH=yes;;
 		t ) THREADS="$OPTARG";;
-		g ) CUDACORES="$OPTARG";;
-		c ) NUMCALLERS="$OPTARG";;
+		g ) CUDACORES="$OPTARG";; # NVIDIAGeForceRTX2060=32; NVIDIAGeForceRTX2080=64
+		c ) NUMCALLERS="$OPTARG";; # NVIDIAGeForceRTX2060=60; NVIDIAGeForceRTX2080=46
 	esac
 done
 shift $((OPTIND -1))
@@ -35,7 +36,7 @@ assembly_minion.sh $SAMPLESHEET $RAWPATH $THREADS $CUDACORES $NUMCALLERS >> $HOM
 
 if [[ -n "$PLOTDEPTH" ]]; then
 	source activate depth
-	plot_depth.py --bams $HOME/WGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.trimmed.sorted.bam -o $HOME/WGS/LIBRARIES/$(basename $RAWPATH)/CONSENSUS/$(basename $RAWPATH).depth.pdf -r $HOME/WGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.reference.fasta # https://github.com/ItokawaK/Alt_nCov2019_primers
+	plot_depth.py --bams $HOME/WGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.primertrimmed.rg.sorted.bam -o $HOME/WGS/LIBRARIES/$(basename $RAWPATH)/CONSENSUS/$(basename $RAWPATH).depth.pdf -r $HOME/WGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.reference.fasta # https://github.com/ItokawaK/Alt_nCov2019_primers
 fi
 
 rm -rf $HOME/WGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.reference.fasta*

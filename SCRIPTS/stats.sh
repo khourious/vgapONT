@@ -1,3 +1,7 @@
+#!/bin/bash
+
+# modified CADDE/USP script
+
 sample="$1"
 
 library="$2"

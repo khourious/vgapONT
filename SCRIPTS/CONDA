@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# author: Laise de Moraes <laisepaixao@live.com>
+# institution: Universidade Federal da Bahia, Brazil
+# URL: https://github.com/lpmor22
+# date: 24 APR 2021
+
 [ -d "$HOME/miniconda3" ] && rm -rf $HOME/miniconda3 $HOME/.conda*
 
 cd
@@ -10,11 +15,11 @@ bash Miniconda3-latest-Linux-x86_64.sh -bfp miniconda3
 
 rm Miniconda3-latest-Linux-x86_64.sh
 
-export PATH=$HOME/miniconda3/bin:/usr/local/share/rsi/idl/bin:$PATH
-
 echo 'export PATH=$HOME/miniconda3/bin:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.bashrc
 
 echo 'export PATH=$HOME/miniconda3/bin:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.zshrc
+
+export PATH=$HOME/miniconda3/bin:/usr/local/share/rsi/idl/bin:$PATH
 
 conda install -y -c conda-forge mamba
 

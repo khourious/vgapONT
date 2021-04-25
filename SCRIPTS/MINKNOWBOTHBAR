@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# author: Laise de Moraes <laisepaixao@live.com>
+# institution: Universidade Federal da Bahia, Brazil
+# URL: https://github.com/lpmor22
+# date: 24 APR 2021
+
 sudo /opt/ont/minknow/bin/config_editor --conf application --filename /opt/ont/minknow/conf/app_conf \
     --set guppy.extra_arguments="--require_barcodes_both_ends"
 
