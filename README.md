@@ -19,14 +19,13 @@ bash INSTALL
 ```sh
 Assembly pipeline for WGS using Illumina
 
-Usage: ILLUMINA [-r RAWPATH] [-s PRIMERSCHEME] [-d] [-t THREADS] [-h]
+Usage: ILLUMINA [-r RAWPATH] [-s PRIMERSCHEME] [-d] [-t THREADS]
 
 Options:
 -r  The PATH to the directory containing the raw sequencing data downloaded from Illumina BaseSpace Sequence Hub (fastq.gz files).
 -s  The prime scheme information (example: nCoV-2019/FIOCRUZ_2kb_v1 or nCoV-2019/ARTIC_V3)
 -d  Generates depth plots in sigle PDF file from multiple BAM files to briefly check coverages [from ItokawaK/Alt_nCov2019_primers].
 -t  Number of tasks to process concurrently.
--h  Display this help message.
 ```
 
 ---
@@ -47,7 +46,7 @@ sample01,BC01-BC02,nCoV-2019/ARTIC_V3
 ```sh
 Assembly pipeline for WGS using MinION
 
-Usage: MINION [-r RAWPATH] [-s SAMPLESHEET] [-d] [-t THREADS] [-g CUDACORES] [-c NUMCALLERS] [-h]
+Usage: MINION [-r RAWPATH] [-s SAMPLESHEET] [-d] [-t THREADS] [-g CUDACORES] [-c NUMCALLERS]
 
 Options:
 -r  The PATH to the directory containing the raw sequencing data (fast5 files).
@@ -56,5 +55,4 @@ Options:
 -t  Number of tasks to process concurrently.
 -g  Number of GPU cuda cores [for guppy_basecaller].
 -c  Number of parallel basecallers to FAST5 file [for guppy_basecaller].
--h  Display this help message.
 ```
