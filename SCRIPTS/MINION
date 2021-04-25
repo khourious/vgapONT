@@ -4,7 +4,7 @@ CUDACORES="$4" # NVIDIAGeForceRTX2060=32; NVIDIAGeForceRTX2080=64
 
 NUMCALLERS="46" # NVIDIAGeForceRTX2060=60; NVIDIAGeForceRTX2080=46
 
-while getopts ":r:s:dt:g:c:h" opt; do
+while getopts ":r:s:dt:g:c:" opt; do
 	case $opt in
 		r ) RAWPATH="$OPTARG";;
 		s ) SAMPLESHEET="$OPTARG";;
@@ -12,7 +12,6 @@ while getopts ":r:s:dt:g:c:h" opt; do
 		t ) THREADS="$OPTARG";;
 		g ) CUDACORES="$OPTARG";;
 		c ) NUMCALLERS="$OPTARG";;
-		h ) HELP=yes;;
 	esac
 done
 shift $((OPTIND -1))
@@ -20,7 +19,7 @@ shift $((OPTIND -1))
 if [[ -z "$RAWPATH" ]] || [[ -z "$SAMPLESHEET" ]] || [[ -z "$THREADS" ]] || [[ -z "$CUDACORES" ]] || [[ -z "$NUMCALLERS" ]]; then
 	echo "Assembly pipeline for WGS using MinION
 
-Usage: $(basename $0) [-r RAWPATH] [-s SAMPLESHEET] [-d] [-t THREADS] [-g CUDACORES] [-c NUMCALLERS] [-h]
+Usage: $(basename $0) [-r RAWPATH] [-s SAMPLESHEET] [-d] [-t THREADS] [-g CUDACORES] [-c NUMCALLERS]
 
 Options:
 -r  The PATH to the directory containing the raw sequencing data (fast5 files).
@@ -28,8 +27,7 @@ Options:
 -d  Generates depth plots in sigle PDF file from multiple BAM files to briefly check coverages [from ItokawaK/Alt_nCov2019_primers].
 -t  Number of tasks to process concurrently.
 -g  Number of GPU cuda cores [for guppy_basecaller].
--c  Number of parallel basecallers to FAST5 file [for guppy_basecaller].
--h  Display this help message."
+-c  Number of parallel basecallers to FAST5 file [for guppy_basecaller]."
 	exit 1
 fi
 
