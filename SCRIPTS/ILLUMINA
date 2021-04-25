@@ -1,12 +1,11 @@
 #!/bin/bash
 
-while getopts ":r:s:dt:h" opt; do
+while getopts ":r:s:dt:" opt; do
 	case $opt in
 		r ) RAWPATH="$OPTARG";;
 		s ) PRIMERSCHEME="$OPTARG";;
 		d ) PLOTDEPTH=yes;;
 		t ) THREADS="$OPTARG";;
-		h ) HELP=yes;;
 	esac
 done
 shift $((OPTIND -1))
@@ -14,14 +13,13 @@ shift $((OPTIND -1))
 if [[ -z "$RAWPATH" ]] || [[ -z "$PRIMERSCHEME" ]] || [[ -z "$THREADS" ]]; then
 	echo "Assembly pipeline for WGS using Illumina
 
-Usage: $(basename $0) [-r RAWPATH] [-s PRIMERSCHEME] [-d] [-t THREADS] [-h]
+Usage: $(basename $0) [-r RAWPATH] [-s PRIMERSCHEME] [-d] [-t THREADS]
 
 Options:
 -r  The PATH to the directory containing the raw sequencing data downloaded from Illumina's BaseSpace Sequence Hub (fastq.gz files).
 -s  The prime scheme information (example: nCoV-2019/FIOCRUZ_2kb_v1 or nCoV-2019/ARTIC_V3).
 -d  Generates depth plots in sigle PDF file from multiple BAM files to briefly check coverages [from ItokawaK/Alt_nCov2019_primers].
--t  Num tasks to process concurrently.
--h  Display this help message."
+-t  Num tasks to process concurrently."
 	exit 1
 fi
 
