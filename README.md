@@ -32,7 +32,7 @@ Usage: ILLUMINA [-r RAWPATH] [-s PRIMERSCHEME] [-t THREADS]
 
 Requires to create the sample sheet (.csv). You can create in ``SAMPLE_SHEETS`` directory.
 	
-The csv file name **corresponds to the library name** and contains: sample,barcode,virus_reference/version and **NO HEADER!!**
+The csv file name **corresponds to the library name** and contains: sample,barcode,reference/version and **NO HEADER!!**
 ```sh
 sample01,BC01,nCoV-2019/ARTIC_V3
 sample02,BC02,nCoV-2019/ARTIC_V3
