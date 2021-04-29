@@ -21,7 +21,7 @@ Assembly pipeline for WGS using Illumina
 
 Usage: ILLUMINA [-r RAWPATH] [-s PRIMERSCHEME] [-t THREADS]
 
--r  The PATH to the directory containing the raw sequencing data downloaded from Illumina BaseSpace Sequence Hub (fastq.gz files).
+-r  The FULL PATH to the directory containing the raw sequencing data downloaded from Illumina BaseSpace Sequence Hub (fastq.gz files).
 -s  The prime scheme information (example: nCoV-2019/FIOCRUZ_2kb_v1 or nCoV-2019/ARTIC_V3)
 -t  Number of tasks to process concurrently.
 ```
@@ -48,8 +48,8 @@ Assembly pipeline for WGS using MinION
 
 Usage: MINION [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS] [-g CUDACORES] [-c NUMCALLERS]
 
--r  The PATH to the directory containing the raw sequencing data (fast5 files).
--s  The PATH to the sample sheet (.csv) file.
+-r  The FULL PATH to the directory containing the raw sequencing data (fast5 files).
+-s  The FULL PATH to the sample sheet (.csv) file.
 -t  Number of tasks to process concurrently.
 -g  Number of GPU cuda cores [for guppy_basecaller].
 -c  Number of parallel basecallers to FAST5 file [for guppy_basecaller].

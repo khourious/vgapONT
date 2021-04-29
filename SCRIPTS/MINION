@@ -22,8 +22,8 @@ if [[ -z "$RAWPATH" ]] || [[ -z "$SAMPLESHEET" ]] || [[ -z "$THREADS" ]] || [[ -
 
 Usage: $(basename $0) [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS] [-g CUDACORES] [-c NUMCALLERS]
 
--r  The PATH to the directory containing the raw sequencing data (fast5 files).
--s  The PATH to the sample sheet (.csv) file.
+-r  The FULL PATH to the directory containing the raw sequencing data (fast5 files).
+-s  The FULL PATH to the sample sheet (.csv) file.
 -t  Number of tasks to process concurrently.
 -g  Number of GPU cuda cores [for guppy_basecaller].
 -c  Number of parallel basecallers to FAST5 file [for guppy_basecaller]."

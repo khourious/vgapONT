@@ -3,7 +3,7 @@
 # author: Laise de Moraes <laisepaixao@live.com>
 # institution: Universidade Federal da Bahia, Brazil
 # URL: https://github.com/lpmor22
-# date: 24 APR 2021
+# date: 29 APR 2021
 
 while getopts ":r:s:dt:" opt; do
 	case $opt in
@@ -20,7 +20,7 @@ if [[ -z "$RAWPATH" ]] || [[ -z "$PRIMERSCHEME" ]] || [[ -z "$THREADS" ]]; then
 
 Usage: $(basename $0) [-r RAWPATH] [-s PRIMERSCHEME] [-t THREADS]
 
--r  The PATH to the directory containing the raw sequencing data downloaded from Illumina's BaseSpace Sequence Hub (fastq.gz files).
+-r  The FULL PATH to the directory containing the raw sequencing data downloaded from Illumina's BaseSpace Sequence Hub (fastq.gz files).
 -s  The prime scheme information (example: nCoV-2019/FIOCRUZ_2kb_v1 or nCoV-2019/ARTIC_V3).
 -t  Num tasks to process concurrently."
 	exit 1
