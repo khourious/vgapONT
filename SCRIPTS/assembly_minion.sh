@@ -5,7 +5,7 @@
 # author: Laise de Moraes <laisepaixao@live.com>
 # institution: Universidade Federal da Bahia, Brazil
 # URL: https://github.com/lpmor22
-# date: 28 APR 2021
+# date: 29 APR 2021
 
 start=$(date +%s.%N)
 
@@ -24,10 +24,6 @@ library="$(basename "$csv" | cut -d. -f1)"
 primerscheme="$(cat "$csv" | awk -F"," '{print $3}' | awk 'NR==1{print}')"
 
 ref="$(cat "$csv" | awk -F"," '{print $3}' | awk 'NR==1{print}' | cut -d/ -f1)"
-
-min=`cat "$ref".scheme.bed | awk -F"\t" '{print $2,$3}' | tr '\n' ' ' | awk '{for (i=1;i<=(NF/2);i=i+2) {print $(i*2+1)-$(i*2)}}' | awk '{for (i=1;i<=NF;i++) if ($i>=0) print $i} ' | sort -n | awk 'NR==1{print}' | awk '{print $1}'`
-
-max=`cat "$ref".scheme.bed | awk -F"\t" '{print $2,$3}' | tr '\n' ' ' | awk '{for (i=1;i<=(NF/2);i=i+2) {print $(i*2+1)-$(i*2)}}' | awk '{for (i=1;i<=NF;i++) if ($i>=0) print $i} ' | sort -nr | awk 'NR==1{print}' | awk '{print $1+200}'`
 
 [ ! -d $HOME/WGS/LIBRARIES ] && mkdir $HOME/WGS/LIBRARIES -v
 
@@ -54,6 +50,10 @@ pycoQC -q -f ../HAC_BASECALL/sequencing_summary.txt -b ../DEMUX/barcoding_summar
 cp ../../../PRIMER_SCHEMES/"$primerscheme"/"$ref".reference.fasta "$ref".reference.fasta -v
 
 cp ../../../PRIMER_SCHEMES/"$primerscheme"/"$ref".scheme.bed "$ref".scheme.bed -v
+
+min=`cat "$ref".scheme.bed | awk -F"\t" '{print $2,$3}' | tr '\n' ' ' | awk '{for (i=1;i<=(NF/2);i=i+2) {print $(i*2+1)-$(i*2)}}' | awk '{for (i=1;i<=NF;i++) if ($i>=0) print $i} ' | sort -n | awk 'NR==1{print}' | awk '{print $1}'`
+
+max=`cat "$ref".scheme.bed | awk -F"\t" '{print $2,$3}' | tr '\n' ' ' | awk '{for (i=1;i<=(NF/2);i=i+2) {print $(i*2+1)-$(i*2)}}' | awk '{for (i=1;i<=NF;i++) if ($i>=0) print $i} ' | sort -nr | awk 'NR==1{print}' | awk '{print $1+200}'`
 
 echo "Sample@Nb of reads mapped@Average depth coverage@Bases covered >10x@Bases covered >25x@Reference covered (%)" | tr '@' '\t' > "$library".stats.txt
 
