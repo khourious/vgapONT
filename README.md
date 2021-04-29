@@ -33,14 +33,16 @@ Usage: ILLUMINA [-r RAWPATH] [-s PRIMERSCHEME] [-t THREADS]
 Requires to create the sample sheet (.csv). You can create in ``SAMPLE_SHEETS`` directory.
 	
 The csv file name **corresponds to the library name** and contains: sample,barcode,virus_reference/version and **NO HEADER!!**
-	
-You can combine pool A and B if they are on 2 different barcodes, by adding an extra line at the end of the csv file:
 ```sh
-sample01A,BC01,nCoV-2019/ARTIC_V3
-sample01B,BC02,nCoV-2019/ARTIC_V3
+sample01,BC01,nCoV-2019/ARTIC_V3
+sample02,BC02,nCoV-2019/ARTIC_V3
+```
+	
+You can combine pool A and B if they are on 2 different barcodes:
+```sh
 sample01,BC01-BC02,nCoV-2019/ARTIC_V3
 ```
-
+	
 ```sh
 Assembly pipeline for WGS using MinION
 
