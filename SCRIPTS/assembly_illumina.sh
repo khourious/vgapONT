@@ -3,7 +3,7 @@
 # author: Laise de Moraes <laisepaixao@live.com>
 # institution: Universidade Federal da Bahia, Brazil
 # URL: https://github.com/lpmor22
-# date: 24 APR 2021
+# date: 28 APR 2021
 
 start=$(date +%s.%N)
 
@@ -16,8 +16,6 @@ threads="$3"
 library="$(basename "$raw")"
 
 ref="$(echo "$primerscheme" | cut -d/ -f1)"
-
-primer="$(echo "$primerscheme" | cut -d/ -f2)"
 
 [ ! -d $HOME/WGS/LIBRARIES ] && mkdir $HOME/WGS/LIBRARIES -v
 
