@@ -3,7 +3,7 @@
 # author: Laise de Moraes <laisepaixao@live.com>
 # institution: Universidade Federal da Bahia, Brazil
 # URL: https://github.com/lpmor22
-# date: 24 APR 2021
+# date: 28 APR 2021
 
 while getopts ":r:s:dt:g:c:" opt; do
 	case $opt in
@@ -20,12 +20,10 @@ shift $((OPTIND -1))
 if [[ -z "$RAWPATH" ]] || [[ -z "$SAMPLESHEET" ]] || [[ -z "$THREADS" ]] || [[ -z "$CUDACORES" ]] || [[ -z "$NUMCALLERS" ]]; then
 	echo "Assembly pipeline for WGS using MinION
 
-Usage: $(basename $0) [-r RAWPATH] [-s SAMPLESHEET] [-d] [-t THREADS] [-g CUDACORES] [-c NUMCALLERS]
+Usage: $(basename $0) [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS] [-g CUDACORES] [-c NUMCALLERS]
 
-Options:
 -r  The PATH to the directory containing the raw sequencing data (fast5 files).
 -s  The PATH to the sample sheet (.csv) file.
--d  Generates depth plots in sigle PDF file from multiple BAM files to briefly check coverages [from ItokawaK/Alt_nCov2019_primers].
 -t  Number of tasks to process concurrently.
 -g  Number of GPU cuda cores [for guppy_basecaller].
 -c  Number of parallel basecallers to FAST5 file [for guppy_basecaller]."
@@ -34,9 +32,10 @@ fi
 
 assembly_minion.sh $SAMPLESHEET $RAWPATH $THREADS $CUDACORES $NUMCALLERS >> $HOME/WGS/LIBRARIES/$(basename $RAWPATH)_log.txt
 
+#use -d only for SARS-CoV-2 -- https://github.com/ItokawaK/Alt_nCov2019_primers
 if [[ -n "$PLOTDEPTH" ]]; then
 	source activate depth
-	plot_depth.py --bams $HOME/WGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.primertrimmed.rg.sorted.bam -o $HOME/WGS/LIBRARIES/$(basename $RAWPATH)/CONSENSUS/$(basename $RAWPATH).depth.pdf -r $HOME/WGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.reference.fasta # https://github.com/ItokawaK/Alt_nCov2019_primers
+	plot_depth_ncov19.py --bams $HOME/WGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.primertrimmed.rg.sorted.bam -o $HOME/WGS/LIBRARIES/$(basename $RAWPATH)/CONSENSUS/$(basename $RAWPATH).depth.pdf -r $HOME/WGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.reference.fasta # https://github.com/ItokawaK/Alt_nCov2019_primers
 fi
 
 rm -rf $HOME/WGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.reference.fasta*
