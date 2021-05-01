@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# modified CADDE/USP script
+# CADDE/USP script
 
 sample="$1"
 
