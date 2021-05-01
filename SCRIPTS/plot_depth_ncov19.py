@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# reference: https://github.com/ItokawaK/Alt_nCov2019_primers
+# forked from https://github.com/ItokawaK/Alt_nCov2019_primers
 
 try:
     import matplotlib
