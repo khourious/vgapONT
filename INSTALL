@@ -4,7 +4,7 @@
 
 mkdir LIBRARIES RAW -v
 
-ln -s $HOME/WGS/SCRIPTS/* $HOME/bin
+ln -s $HOME/VirWGS/SCRIPTS/* $HOME/bin
 
 bash $HOME/bin/GUPPY
 

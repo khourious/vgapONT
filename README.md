@@ -8,7 +8,7 @@ This repo contains scripts and files to run the bioinformatic analysis of whole 
 
 Download and install the pipeline from the github repo:
 ```sh
-git clone --recursive https://github.com/lpmor22/WGS.git; cd WGS
+git clone --recursive https://github.com/lpmor22/VirWGS.git; cd VirWGS
 chmod 700 -R INSTALL SCRIPTS
 bash INSTALL
 ```
