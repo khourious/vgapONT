@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # author: Laise de Moraes <laisepaixao@live.com>
-# institution: Universidade Federal da Bahia, Brazil
-# URL: https://github.com/lpmor22
-# date: 28 APR 2021
+# institution: Oswaldo Cruz Foundation, Gonçalo Moniz Institute, Bahia, Brazil
+# URL: https://lpmor22.github.io
+# date: 01 MAI 2021
 
 start=$(date +%s.%N)
 
@@ -17,27 +17,25 @@ library="$(basename "$raw")"
 
 ref="$(echo "$primerscheme" | cut -d/ -f1)"
 
-[ ! -d $HOME/WGS/LIBRARIES ] && mkdir $HOME/WGS/LIBRARIES -v
+[ ! -d $HOME/VirWGS/LIBRARIES ] && mkdir $HOME/VirWGS/LIBRARIES -v
 
-[ -d $HOME/WGS/LIBRARIES/"$library" ] && rm -rfd $HOME/WGS/LIBRARIES/"$library"
+[ -d $HOME/VirWGS/LIBRARIES/"$library" ] && rm -rfd $HOME/VirWGS/LIBRARIES/"$library"
 
-mkdir $HOME/WGS/LIBRARIES/"$library" -v
+mkdir $HOME/VirWGS/LIBRARIES/"$library" -v
 
-mkdir $HOME/WGS/LIBRARIES/"$library"/ANALYSIS -v
+mkdir $HOME/VirWGS/LIBRARIES/"$library"/ANALYSIS -v
 
-mkdir $HOME/WGS/LIBRARIES/"$library"/CONSENSUS -v
+mkdir $HOME/VirWGS/LIBRARIES/"$library"/CONSENSUS -v
 
-mkdir $HOME/WGS/LIBRARIES/"$library"/FASTQC -v
+mkdir $HOME/VirWGS/LIBRARIES/"$library"/FASTQC -v
 
-cd $HOME/WGS/RAW/"$library"
+cd $HOME/VirWGS/RAW/"$library"
 
 for i in $(find ./ -type f -name "*.fastq.gz"); do cp "$i" ../../LIBRARIES/"$library"/ANALYSIS -v; done
 
 cd ../../LIBRARIES/"$library"/ANALYSIS
 
-for i in $(find ./ -type f -name "*R1*.fastq.gz" -exec basename {} \;); do mv "$i" "$(echo "$i" | rev | cut -c 25- | rev)_R1.fastq.gz" -v; done
-
-for i in $(find ./ -type f -name "*R2*.fastq.gz" -exec basename {} \;); do mv "$i" "$(echo "$i" | rev | cut -c 25- | rev)_R2.fastq.gz" -v; done
+for i in $(find ./ -type f -name "*.fastq.gz" -exec basename {} \;); do mv "$i" "$(echo "$i" | rev | cut -c 25- | rev)_R1.fastq.gz" -v; mv "$i" "$(echo "$i" | rev | cut -c 25- | rev)_R2.fastq.gz" -v; done
 
 source activate illumina
 
