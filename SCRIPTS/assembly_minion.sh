@@ -3,8 +3,8 @@
 # modified CADDE/USP script
 
 # author: Laise de Moraes <laisepaixao@live.com>
-# institution: Universidade Federal da Bahia, Brazil
-# URL: https://github.com/lpmor22
+# institution: Oswaldo Cruz Foundation, Gonçalo Moniz Institute, Bahia, Brazil
+# URL: https://lpmor22.github.io
 # date: 29 APR 2021
 
 start=$(date +%s.%N)
@@ -25,17 +25,17 @@ primerscheme="$(cat "$csv" | awk -F"," '{print $3}' | awk 'NR==1{print}')"
 
 ref="$(cat "$csv" | awk -F"," '{print $3}' | awk 'NR==1{print}' | cut -d/ -f1)"
 
-[ ! -d $HOME/WGS/LIBRARIES ] && mkdir $HOME/WGS/LIBRARIES -v
+[ ! -d $HOME/VirWGS/LIBRARIES ] && mkdir $HOME/VirWGS/LIBRARIES -v
 
-[ -d $HOME/WGS/LIBRARIES/"$library" ] && rm -rfd $HOME/WGS/LIBRARIES/"$library"
+[ -d $HOME/VirWGS/LIBRARIES/"$library" ] && rm -rfd $HOME/VirWGS/LIBRARIES/"$library"
 
-mkdir $HOME/WGS/LIBRARIES/"$library" -v
+mkdir $HOME/VirWGS/LIBRARIES/"$library" -v
 
-mkdir $HOME/WGS/LIBRARIES/"$library"/ANALYSIS -v
+mkdir $HOME/VirWGS/LIBRARIES/"$library"/ANALYSIS -v
 
-mkdir $HOME/WGS/LIBRARIES/"$library"/CONSENSUS -v
+mkdir $HOME/VirWGS/LIBRARIES/"$library"/CONSENSUS -v
 
-cd $HOME/WGS/LIBRARIES/"$library"
+cd $HOME/VirWGS/LIBRARIES/"$library"
 
 guppy_basecaller -x auto --gpu_runners_per_device "$cudacores" --num_numcallers "$numcallers" -r -i "$fast5" -s HAC_BASECALL -c dna_r9.4.1_450bps_hac.cfg --verbose_logs
 

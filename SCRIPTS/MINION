@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # author: Laise de Moraes <laisepaixao@live.com>
-# institution: Universidade Federal da Bahia, Brazil
-# URL: https://github.com/lpmor22
+# institution: Oswaldo Cruz Foundation, Gonçalo Moniz Institute, Bahia, Brazil
+# URL: https://lpmor22.github.io
 # date: 28 APR 2021
 
 while getopts ":r:s:dt:g:c:" opt; do
@@ -30,18 +30,18 @@ Usage: $(basename $0) [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS] [-g CUDACORES] 
 	exit 1
 fi
 
-assembly_minion.sh $SAMPLESHEET $RAWPATH $THREADS $CUDACORES $NUMCALLERS >> $HOME/WGS/LIBRARIES/$(basename $RAWPATH)_log.txt
+assembly_minion.sh $SAMPLESHEET $RAWPATH $THREADS $CUDACORES $NUMCALLERS >> $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)_log.txt
 
 #use -d only for SARS-CoV-2 -- https://github.com/ItokawaK/Alt_nCov2019_primers
 if [[ -n "$PLOTDEPTH" ]]; then
 	source activate depth
-	plot_depth_ncov19.py --bams $HOME/WGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.primertrimmed.rg.sorted.bam -o $HOME/WGS/LIBRARIES/$(basename $RAWPATH)/CONSENSUS/$(basename $RAWPATH).depth.pdf -r $HOME/WGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.reference.fasta # https://github.com/ItokawaK/Alt_nCov2019_primers
+	plot_depth_ncov19.py --bams $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.primertrimmed.rg.sorted.bam -o $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)/CONSENSUS/$(basename $RAWPATH).depth.pdf -r $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.reference.fasta # https://github.com/ItokawaK/Alt_nCov2019_primers
 fi
 
-rm -rf $HOME/WGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.reference.fasta*
+rm -rf $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.reference.fasta*
 
-rm -rf $HOME/WGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.score.bed
+rm -rf $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.score.bed
 
-tar -czf $HOME/WGS/LIBRARIES/$(basename $RAWPATH).tar.gz -P $HOME/WGS/LIBRARIES/$(basename $RAWPATH)*
+tar -czf $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH).tar.gz -P $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)*
 
 [ -f ./nohup.out ] && rm -rf ./nohup.out
