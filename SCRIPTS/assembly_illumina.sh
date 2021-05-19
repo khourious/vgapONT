@@ -35,7 +35,9 @@ for i in $(find ./ -type f -name "*.fastq.gz"); do cp "$i" ../../LIBRARIES/"$lib
 
 cd ../../LIBRARIES/"$library"/ANALYSIS
 
-for i in $(find ./ -type f -name "*.fastq.gz" -exec basename {} \;); do mv "$i" "$(echo "$i" | rev | cut -c 25- | rev)_R1.fastq.gz" -v; mv "$i" "$(echo "$i" | rev | cut -c 25- | rev)_R2.fastq.gz" -v; done
+for i in $(find ./ -type f -name "*R1*" -exec basename {} \;); do mv "$i" "$(echo "$i" | rev | cut -c 25- | rev)_R1.fastq.gz" -v; done
+
+for i in $(find ./ -type f -name "*R2*" -exec basename {} \;); do mv "$i" "$(echo "$i" | rev | cut -c 25- | rev)_R2.fastq.gz" -v; done
 
 source activate illumina
 
