@@ -22,16 +22,17 @@ Usage: $(basename $0) [-r RAWPATH] [-s PRIMERSCHEME] [-t THREADS]
 
 -r  The FULL PATH to the directory containing the raw sequencing data downloaded from Illumina's BaseSpace Sequence Hub (fastq.gz files).
 -s  The prime scheme information (example: nCoV-2019/FIOCRUZ_2kb_v1 or nCoV-2019/ARTIC_V3).
+-d  Generates depth plots in PDF file from BAM files to briefly check coverages.
 -t  Num tasks to process concurrently."
 	exit 1
 fi
 
 assembly_illumina.sh $PRIMERSCHEME $RAWPATH $THREADS >> $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)_log.txt
 
-#use -d only for SARS-CoV-2 -- https://github.com/ItokawaK/Alt_nCov2019_primers
 if [[ -n "$PLOTDEPTH" ]]; then
-	source activate depth
-	plot_depth_ncov19.py -t $THREADS --bams $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.primertrimmed.rg.sorted.bam -o $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)/CONSENSUS/$(basename $RAWPATH).depth.pdf -r $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.reference.fasta # https://github.com/ItokawaK/Alt_nCov2019_primers
+	source activate plot
+	for i in $(find $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/ -type f -name "*.primertrimmed.rg.sorted.bam" | while read o; do basename $o | cut -d. -f1; done | sort | uniq); do fastcov -l $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/"$i".primertrimmed.rg.sorted.bam -o $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/"$i".coverage.pdf; done # https://github.com/RaverJay/fastcov
+	gs -dSAFER -r3000 -sDEVICE=pdfwrite -dNOPAUSE -dBATCH $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.pdf -sOUTPUTFILE=$HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)/CONSENSUS/$(basename $RAWPATH).depth.pdf; done
 fi
 
 rm -rf $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.reference.fasta*
