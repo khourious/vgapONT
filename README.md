@@ -1,6 +1,6 @@
-## Viral genome assembly pipeline for WGS using Illumina and MinION
+## Viral genome assembly pipeline for WGS using Nanopore Sequencing
 
-This repo contains scripts and files to run the bioinformatic analysis of whole genome sequencing of viruses using Illlumina or MinION platform, and was built based on the CADDE and ARTIC bioinformatics workflow.
+This repo contains scripts and files to run the bioinformatic analysis of whole genome sequencing of viruses using Illlumina or ONT platforms, and was built based on the CADDE and ARTIC bioinformatics workflow.
 
 ---
 
@@ -8,27 +8,13 @@ This repo contains scripts and files to run the bioinformatic analysis of whole 
 
 Download and install the pipeline from the github repo:
 ```sh
-git clone --recursive https://github.com/lpmor22/VirWGS.git; cd VirWGS
+git clone --recursive https://github.com/lpmor22/vgapWGS-ONT.git; cd vgapWGS-ONT
 chmod 700 -R INSTALL SCRIPTS
 bash INSTALL
 ```
 ---
 
-#### Illumina pipeline
-
-```sh
-Assembly pipeline for WGS using Illumina
-
-Usage: ILLUMINA [-r RAWPATH] [-s PRIMERSCHEME] [-t THREADS]
-
--r  The FULL PATH to the directory containing the raw sequencing data downloaded from Illumina BaseSpace Sequence Hub (fastq.gz files).
--s  The prime scheme information (example: nCoV-2019/FIOCRUZ_2kb_v1 or nCoV-2019/ARTIC_V3)
--t  Number of tasks to process concurrently.
-```
-
----
-
-#### MinION pipeline
+### How to use the vgapWGS-ONT pipeline
 
 Requires to create the sample sheet (.csv). You can create in ``SAMPLE_SHEETS`` directory.
 	
