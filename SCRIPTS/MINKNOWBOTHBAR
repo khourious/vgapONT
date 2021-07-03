@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# author: Laise de Moraes <laisepaixao@live.com>
-# institution: Oswaldo Cruz Foundation, Gonçalo Moniz Institute, Bahia, Brazil
-# URL: https://lpmor22.github.io
-# date: 24 APR 2021
-
 sudo /opt/ont/minknow/bin/config_editor --conf application --filename /opt/ont/minknow/conf/app_conf \
     --set guppy.extra_arguments="--require_barcodes_both_ends"
 
