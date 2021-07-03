@@ -1,6 +1,6 @@
 ## Viral genome assembly pipeline for WGS using Nanopore Sequencing
 
-This repo contains scripts and files to run the bioinformatic analysis of whole genome sequencing of viruses using Illlumina or ONT platforms, and was built based on the CADDE and ARTIC bioinformatics workflow.
+This repo contains scripts and files to run the bioinformatic analysis of whole genome sequencing of viruses using ONT and was built based on the CADDE and ARTIC bioinformatics workflow.
 
 ---
 
@@ -30,7 +30,7 @@ sample01,BC01-BC02,nCoV-2019/ARTIC_V3
 ```
 	
 ```sh
-Assembly pipeline for WGS using MinION
+Assembly pipeline for WGS using ONT
 
 Usage: MINION [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS] [-g CUDACORES] [-c NUMCALLERS]
 
