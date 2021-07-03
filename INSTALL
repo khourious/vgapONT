@@ -26,15 +26,18 @@ if [[ -z "$(which conda)" ]]; then
     rm Miniconda3-latest-Linux-x86_64.sh
     echo 'export PATH=$HOME/miniconda3/bin:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.${MYSHELL}rc
     export PATH=$HOME/miniconda3/bin:/usr/local/share/rsi/idl/bin:$PATH
+else
     if [[ -z "$(which mamba)" ]]; then
         conda install -y -c conda-forge mamba
         mamba update -y -n base conda
-        mamba create -y -n vgapWGS-ONT -c conda-forge -c bioconda -c defaults artic exonerate toulligqc
-        mamba create -y -n plot -c conda-forge -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
+        mamba create -y -n ont_assembly -c conda-forge -c bioconda -c defaults artic exonerate
+        mamba create -y -n ont_qc -c conda-forge -c bioconda -c defaults toulligqc
+        mamba create -y -n ont_plot -c conda-forge -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
     else
         mamba update -y -n base conda
-        mamba create -y -n vgapWGS-ONT -c conda-forge -c bioconda -c defaults artic exonerate toulligqc
-        mamba create -y -n plot -c conda-forge -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
+        mamba create -y -n ont_assembly -c conda-forge -c bioconda -c defaults artic exonerate
+        mamba create -y -n ont_qc -c conda-forge -c bioconda -c defaults toulligqc
+        mamba create -y -n ont_plot -c conda-forge -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
     fi
 fi
 
