@@ -32,12 +32,12 @@ else
         mamba update -y -n base conda
         mamba create -y -n ont_assembly -c conda-forge -c bioconda -c defaults artic exonerate
         mamba create -y -n ont_qc -c conda-forge -c bioconda -c defaults toulligqc
-        mamba create -y -n ont_plot -c conda-forge -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
+        mamba create -y -n plot -c conda-forge -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
     else
         mamba update -y -n base conda
         mamba create -y -n ont_assembly -c conda-forge -c bioconda -c defaults artic exonerate
         mamba create -y -n ont_qc -c conda-forge -c bioconda -c defaults toulligqc
-        mamba create -y -n ont_plot -c conda-forge -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
+        mamba create -y -n plot -c conda-forge -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
     fi
 fi
 
