@@ -32,8 +32,6 @@ bg() {
 
     VGAP=$(find $HOME -type d -name "vgapWGS-ONT")
 
-    source activate vgapWGS-ONT
-
     assembly_minion.sh $SAMPLESHEET $RAWPATH $THREADS $CUDACORES $NUMCALLERS
 
     source activate plot
