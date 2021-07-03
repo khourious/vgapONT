@@ -1,7 +1,18 @@
-## Viral genome assembly pipeline for WGS using Nanopore Sequencing
+## Viral genome assembly pipeline for WGS using nanopore sequencing
 
 This repo contains scripts and files to run the bioinformatic analysis of whole genome sequencing of viruses using ONT and was built based on the CADDE and ARTIC bioinformatics workflow.
 
+```sh
+Assembly pipeline for WGS using ONT
+
+Usage: MINION [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS] [-g CUDACORES] [-c NUMCALLERS]
+
+-r  The FULL PATH to the directory containing the raw sequencing data (fast5 files).
+-s  The FULL PATH to the sample sheet (.csv) file.
+-t  Number of tasks to process concurrently.
+-g  Number of GPU cuda cores [for guppy_basecaller].
+-c  Number of parallel basecallers to FAST5 file [for guppy_basecaller].
+```
 ---
 
 ### Setting up the pipeline
@@ -27,16 +38,4 @@ sample02,BC02,nCoV-2019/ARTIC_V3
 You can combine pool A and B if they are on 2 different barcodes:
 ```sh
 sample01,BC01-BC02,nCoV-2019/ARTIC_V3
-```
-	
-```sh
-Assembly pipeline for WGS using ONT
-
-Usage: MINION [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS] [-g CUDACORES] [-c NUMCALLERS]
-
--r  The FULL PATH to the directory containing the raw sequencing data (fast5 files).
--s  The FULL PATH to the sample sheet (.csv) file.
--t  Number of tasks to process concurrently.
--g  Number of GPU cuda cores [for guppy_basecaller].
--c  Number of parallel basecallers to FAST5 file [for guppy_basecaller].
 ```
