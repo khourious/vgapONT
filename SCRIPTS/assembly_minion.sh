@@ -1,41 +1,30 @@
 #!/bin/bash
 
-# modified CADDE/USP script
+CSV="$1"
+FAST5="$2"
+THREADS="$3"
+CUDACORES="$4"
+NUMCALLERS="$5"
 
-# author: Laise de Moraes <laisepaixao@live.com>
-# institution: Oswaldo Cruz Foundation, Gonçalo Moniz Institute, Bahia, Brazil
-# URL: https://lpmor22.github.io
-# date: 29 APR 2021
+VGAP=$(find $HOME -type d -name "vgapWGS-ONT")
 
-start=$(date +%s.%N)
+LIBPATH="$VGAP/LIBRARIES"
 
-csv="$1"
+LIBNAME=$(basename "$CSV" | awk -F. '{print $1}')
 
-fast5="$2"
+PRIMERSCHEME=$(cat "$CSV" | awk -F, '{print $3}' | sed -n '1p')
 
-threads="$3"
+REFSEQ=$(cat "$CSV" | awk -F, '{print $3}' | awk -F/ '{print $2}')
 
-cudacores="$4"
+[ ! -d $LIBPAH ] && mkdir $LIBPATH -v
+[ -d $LIBPATH/"$LIBNAME" ] && rm -rfd $LIBPATH/"$LIBNAME"
 
-numcallers="$5"
+mkdir $LIBPATH/"$LIBNAME" $LIBPATH/"$LIBNAME"/ANALYSIS $LIBPATH/"$LIBNAME"/CONSENSUS -v
 
-library="$(basename "$csv" | cut -d. -f1)"
+cd $LIBPATH/"$LIBNAME"
 
-primerscheme="$(cat "$csv" | awk -F"," '{print $3}' | awk 'NR==1{print}')"
 
-ref="$(cat "$csv" | awk -F"," '{print $3}' | awk 'NR==1{print}' | cut -d/ -f1)"
 
-[ ! -d $HOME/VirWGS/LIBRARIES ] && mkdir $HOME/VirWGS/LIBRARIES -v
-
-[ -d $HOME/VirWGS/LIBRARIES/"$library" ] && rm -rfd $HOME/VirWGS/LIBRARIES/"$library"
-
-mkdir $HOME/VirWGS/LIBRARIES/"$library" -v
-
-mkdir $HOME/VirWGS/LIBRARIES/"$library"/ANALYSIS -v
-
-mkdir $HOME/VirWGS/LIBRARIES/"$library"/CONSENSUS -v
-
-cd $HOME/VirWGS/LIBRARIES/"$library"
 
 guppy_basecaller -x auto --gpu_runners_per_device "$cudacores" --num_numcallers "$numcallers" -r -i "$fast5" -s HAC_BASECALL -c dna_r9.4.1_450bps_hac.cfg --verbose_logs
 
@@ -77,8 +66,8 @@ mv "$library".consensus.fasta ../CONSENSUS -v
 
 mv "$library".stats.txt ../CONSENSUS -v
 
-end=$(date +%s.%N)
+rm -rf $VGAP/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.reference.fasta*
 
-runtime=$(python -c "print(${end} - ${start})")
+    rm -rf $VGAP/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.score.bed
 
-echo "" && echo "Done. The runtime was $runtime seconds."
+    tar -czf $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH).tar.gz -P $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)*
