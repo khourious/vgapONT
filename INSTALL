@@ -1,19 +1,19 @@
 #!/bin/bash
 
-# author: Laise de Moraes <laisepaixao@live.com>
-# institution: Oswaldo Cruz Foundation, Gonçalo Moniz Institute, Bahia, Brazil
-# URL: https://lpmor22.github.io
-# date: 30 MAY 2021
+MYSHELL=$(echo $SHELL | awk -F/ '{print $NF}')
+
+VGAP_PATH=$(find $HOME -type d -name "vgapWGS-ONT")
+FASTCOV_PATH=$(find $HOME -type d -name "fastcov")
 
 mkdir LIBRARIES RAW -v
 
 if [[ -z "$(which guppy_basecaller)" ]]; then
-    guppy_version=5.0.7
+    version=5.0.11
     cd
-    curl https://mirror.oxfordnanoportal.com/software/analysis/ont-guppy_"$guppy_version"_linux64.tar.gz -o ont-guppy.tar.gz
+    curl https://mirror.oxfordnanoportal.com/software/analysis/ont-guppy_"$version"_linux64.tar.gz -o ont-guppy.tar.gz
     tar -vzxf ont-guppy.tar.gz
     rm -rf ont-guppy.tar.gz
-    echo 'export PATH=$HOME/ont-guppy/bin:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.*hrc
+    echo 'export PATH=$HOME/ont-guppy/bin:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.${MYSHELL}rc
     export PATH=$HOME/ont-guppy/bin:/usr/local/share/rsi/idl/bin:$PATH
 else
     guppy_basecaller --version
@@ -24,26 +24,21 @@ if [[ -z "$(which conda)" ]]; then
     wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
     bash Miniconda3-latest-Linux-x86_64.sh -bfp miniconda3
     rm Miniconda3-latest-Linux-x86_64.sh
-    echo 'export PATH=$HOME/miniconda3/bin:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.*hrc
+    echo 'export PATH=$HOME/miniconda3/bin:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.${MYSHELL}rc
     export PATH=$HOME/miniconda3/bin:/usr/local/share/rsi/idl/bin:$PATH
     if [[ -z "$(which mamba)" ]]; then
         conda install -y -c conda-forge mamba
+        mamba update -y -n base conda
+        mamba create -y -n vgapWGS-ONT -c conda-forge -c bioconda -c defaults artic exonerate toulligqc
+        mamba create -y -n plot -c conda-forge -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
     else
         mamba update -y -n base conda
-        mamba create -y -n illumina -c conda-forge -c bioconda -c defaults bcftools bwa exonerate fastqc ivar mafft samtools
-        mamba create -y -n minion -c conda-forge -c bioconda -c defaults artic exonerate
-        mamba create -y -n minion-qc -c conda-forge -c bioconda -c defaults python=3.6 pycoqc
-    fi
-else
-    if [[ -z "$(which mamba)" ]]; then
-        conda install -y -c conda-forge mamba
-    else
-        mamba update -y -n base conda
-        mamba create -y -n illumina -c conda-forge -c bioconda -c defaults bcftools bwa exonerate fastqc ivar mafft samtools
-        mamba create -y -n minion -c conda-forge -c bioconda -c defaults artic exonerate
-        mamba create -y -n minion-qc -c conda-forge -c bioconda -c defaults python=3.6 pycoqc
+        mamba create -y -n vgapWGS-ONT -c conda-forge -c bioconda -c defaults artic exonerate toulligqc
+        mamba create -y -n plot -c conda-forge -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
     fi
 fi
 
-[ ! -d $HOME/bin ] && mkdir -p $HOME/bin -v
-ln -s $HOME/VirWGS/SCRIPTS/* $HOME/bin
+cd; git clone https://github.com/RPGillespie6/fastcov.git; cd fastcov
+
+echo 'export PATH=$FASTCOV_PATH:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.${MYSHELL}rc
+echo 'export PATH=$VGAP_PATH/SCRIPTS:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.${MYSHELL}rc
