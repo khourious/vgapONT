@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# author: Laise de Moraes <laisepaixao@live.com>
-# institution: Oswaldo Cruz Foundation, Gonçalo Moniz Institute, Bahia, Brazil
-# URL: https://lpmor22.github.io
-# date: 28 APR 2021
-
 while getopts ":r:s:dt:g:c:" opt; do
 	case $opt in
 		r ) RAWPATH="$OPTARG";;
@@ -18,7 +13,7 @@ done
 shift $((OPTIND -1))
 
 if [[ -z "$RAWPATH" ]] || [[ -z "$SAMPLESHEET" ]] || [[ -z "$THREADS" ]] || [[ -z "$CUDACORES" ]] || [[ -z "$NUMCALLERS" ]]; then
-	echo "Assembly pipeline for WGS using MinION
+	echo "Assembly pipeline for WGS using ONT
 
 Usage: $(basename $0) [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS] [-g CUDACORES] [-c NUMCALLERS]
 
@@ -31,18 +26,29 @@ Usage: $(basename $0) [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS] [-g CUDACORES] 
 	exit 1
 fi
 
-assembly_minion.sh $SAMPLESHEET $RAWPATH $THREADS $CUDACORES $NUMCALLERS >> $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)_log.txt
+bg() {
 
-if [[ -n "$PLOTDEPTH" ]]; then
-	source activate plot
-	for i in $(find $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/ -type f -name "*.primertrimmed.rg.sorted.bam" | while read o; do basename $o | cut -d. -f1; done | sort | uniq); do fastcov -l $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/"$i".primertrimmed.rg.sorted.bam -o $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/"$i".coverage.pdf; done # https://github.com/RaverJay/fastcov
-	gs -dSAFER -r3000 -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -sOUTPUTFILE=$HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)/CONSENSUS/$(basename $RAWPATH).depth.pdf $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.pdf; done
-fi
+    start=$(date +%s.%N)
 
-rm -rf $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.reference.fasta*
+    VGAP=$(find $HOME -type d -name "vgapWGS-ONT")
 
-rm -rf $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.score.bed
+    source activate vgapWGS-ONT
 
-tar -czf $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH).tar.gz -P $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)*
+    assembly_minion.sh $SAMPLESHEET $RAWPATH $THREADS $CUDACORES $NUMCALLERS
 
-[ -f ./nohup.out ] && rm -rf ./nohup.out
+    source activate plot
+
+    if [[ -n "$PLOTDEPTH" ]]; then
+        for i in $(find $VGAP/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/ -type f -name "*.primertrimmed.rg.sorted.bam" | while read o; do basename $o | awk -F. '{print $1}'; done | sort -u); do fastcov -l $VGAP/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/"$i".primertrimmed.rg.sorted.bam -o $VGAP/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/"$i".coverage.pdf; done
+        gs -dSAFER -r3000 -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -sOUTPUTFILE=$VGAP/LIBRARIES/$(basename $RAWPATH)/CONSENSUS/$(basename $RAWPATH).depth.pdf $VGAP/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.pdf
+    fi
+
+    end=$(date +%s.%N)
+
+    runtime=$(python -c "print(${end} - ${start})")
+
+    echo "" && echo "Done. The runtime was $runtime seconds."
+
+}
+
+bg $1 $2 $3 $4 $5 &>"$VGAP/LIBRARIES/$(basename $RAWPATH)"_log.txt &
