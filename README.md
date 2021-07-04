@@ -5,13 +5,11 @@ This repository contains scripts and files to run the bioinformatic analysis of 
 ```sh
 Assembly pipeline for WGS using ONT
 
-Usage: MINION [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS] [-g CUDACORES] [-c NUMCALLERS]
+Usage: MINION [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS]
 
 -r  The FULL PATH to the directory containing the raw sequencing data (fast5 files).
 -s  The FULL PATH to the sample sheet (.csv) file.
 -t  Number of tasks to process concurrently.
--g  Number of GPU cuda cores [for guppy_basecaller].
--c  Number of parallel basecallers to FAST5 file [for guppy_basecaller].
 ```
 ---
 
