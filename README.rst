@@ -17,7 +17,7 @@ This repository contains scripts and files to run the bioinformatic analysis of 
 Setting up the pipeline
 =======================
 
-**Download and install the pipeline from the github repo:**
+Download and install the pipeline from the github repo:
 
 .. code:: bash
 
@@ -29,7 +29,7 @@ Setting up the pipeline
 How to use the vgapWGS-ONT pipeline
 ===================================
 
-**Requires to create the sample sheet (.csv). You can create in ``SAMPLE_SHEETS`` directory.**
+Requires to create the sample sheet (.csv). You can create in ``SAMPLE_SHEETS`` directory.
 	
 The csv file name **corresponds to the library name** and contains: sample,barcode,reference/version -- **NO HEADER!!**
 
