@@ -1,4 +1,5 @@
-## Viral genome assembly pipeline for WGS using nanopore sequencing
+Viral genome assembly pipeline for WGS using nanopore sequencing
+===================================================================
 
 This repository contains scripts and files to run the bioinformatic analysis of whole genome sequencing of viruses using ONT and was built based on the CADDE and ARTIC bioinformatics workflow.
 
