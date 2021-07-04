@@ -1,9 +1,8 @@
 Viral genome assembly pipeline for WGS using nanopore sequencing
 ===================================================================
-
 This repository contains scripts and files to run the bioinformatic analysis of whole genome sequencing of viruses using ONT and was built based on the CADDE and ARTIC bioinformatics workflow.
 
-```sh
+.. code:: bash
 Assembly pipeline for WGS using ONT
 
 Usage: MINION [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS]
@@ -11,7 +10,9 @@ Usage: MINION [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS]
 -r  The FULL PATH to the directory containing the raw sequencing data (fast5 files).
 -s  The FULL PATH to the sample sheet (.csv) file.
 -t  Number of tasks to process concurrently.
-```
+
+
+
 ---
 
 ### Setting up the pipeline
