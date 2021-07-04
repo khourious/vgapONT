@@ -2,9 +2,6 @@
 
 MYSHELL=$(echo $SHELL | awk -F/ '{print $NF}')
 
-VGAP_PATH=$(find $HOME -type d -name "vgapWGS-ONT")
-FASTCOV_PATH=$(find $HOME -type d -name "fastcov")
-
 mkdir LIBRARIES RAW -v
 
 if [[ -z "$(which guppy_basecaller)" ]]; then
@@ -43,5 +40,5 @@ fi
 
 cd; git clone https://github.com/RPGillespie6/fastcov.git; cd fastcov
 
-echo 'export PATH=$FASTCOV_PATH:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.${MYSHELL}rc
-echo 'export PATH=$VGAP_PATH/SCRIPTS:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.${MYSHELL}rc
+echo 'export PATH=$HOME/fastcov:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.${MYSHELL}rc
+echo 'export PATH=$HOME/vgapWGS-ONT/SCRIPTS:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.${MYSHELL}rc
