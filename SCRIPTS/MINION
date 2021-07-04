@@ -1,28 +1,24 @@
 #!/bin/bash
 
-while getopts ":r:s:dt:g:c:" opt; do
+while getopts ":r:s:dt:" opt; do
 	case $opt in
 		r ) RAWPATH="$OPTARG";;
 		s ) SAMPLESHEET="$OPTARG";;
 		d ) PLOTDEPTH=yes;;
 		t ) THREADS="$OPTARG";;
-		g ) CUDACORES="$OPTARG";; # NVIDIAGeForceRTX2060=32; NVIDIAGeForceRTX2080=64
-		c ) NUMCALLERS="$OPTARG";; # NVIDIAGeForceRTX2060=60; NVIDIAGeForceRTX2080=46
 	esac
 done
 shift $((OPTIND -1))
 
-if [[ -z "$RAWPATH" ]] || [[ -z "$SAMPLESHEET" ]] || [[ -z "$THREADS" ]] || [[ -z "$CUDACORES" ]] || [[ -z "$NUMCALLERS" ]]; then
+if [[ -z "$RAWPATH" ]] || [[ -z "$SAMPLESHEET" ]] || [[ -z "$THREADS" ]]; then
 	echo "Assembly pipeline for WGS using ONT
 
-Usage: $(basename $0) [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS] [-g CUDACORES] [-c NUMCALLERS]
+Usage: $(basename $0) [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS]
 
 -r  The FULL PATH to the directory containing the raw sequencing data (fast5 files).
 -s  The FULL PATH to the sample sheet (.csv) file.
 -d  Generates depth plots in PDF file from BAM files to briefly check coverages.
 -t  Number of tasks to process concurrently.
--g  Number of GPU cuda cores [for guppy_basecaller].
--c  Number of parallel basecallers to FAST5 file [for guppy_basecaller]."
 	exit 1
 fi
 
@@ -32,7 +28,7 @@ bg() {
 
     VGAP=$(find $HOME -type d -name "vgapWGS-ONT")
 
-    assembly_minion.sh $SAMPLESHEET $RAWPATH $THREADS $CUDACORES $NUMCALLERS
+    assembly_minion.sh $SAMPLESHEET $RAWPATH $THREADS
 
     source activate plot
 
@@ -49,4 +45,4 @@ bg() {
 
 }
 
-bg $1 $2 $3 $4 $5 &>"$VGAP/LIBRARIES/$(basename $RAWPATH)"_log.txt &
+bg $1 $2 $3 &>"$VGAP/LIBRARIES/$(basename $RAWPATH)"_log.txt &
