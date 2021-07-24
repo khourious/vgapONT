@@ -21,24 +21,55 @@ if [[ -z "$(which conda)" ]]; then
     wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
     bash Miniconda3-latest-Linux-x86_64.sh -bfp miniconda3
     rm Miniconda3-latest-Linux-x86_64.sh
+    MYSHELL=$(echo $SHELL | awk -F/ '{print $NF}')
     echo 'export PATH=$HOME/miniconda3/bin:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.${MYSHELL}rc
     export PATH=$HOME/miniconda3/bin:/usr/local/share/rsi/idl/bin:$PATH
+    conda install -y -c conda-forge mamba
+    mamba update -y -c conda-forge -c anaconda -c bioconda -c defaults -n base conda
+    mamba create -y -n ont_assembly -c conda-forge -c anaconda -c bioconda -c defaults artic exonerate
+    mamba create -y -n ont_qc -c conda-forge -c anaconda -c bioconda -c defaults python=3.6 pycoqc
+    mamba create -y -n plot -c conda-forge -c anaconda -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
 else
     if [[ -z "$(which mamba)" ]]; then
         conda install -y -c conda-forge mamba
-        mamba update -y -n base conda
-        mamba create -y -n ont_assembly -c conda-forge -c bioconda -c defaults artic exonerate
-        mamba create -y -n ont_qc -c conda-forge -c bioconda -c defaults toulligqc
-        mamba create -y -n plot -c conda-forge -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
+        mamba update -y -c conda-forge -c anaconda -c bioconda -c defaults -n base conda
+        if [[ -z "$(conda env list | grep "ont_assembly|ont_qc|plot")" ]]; then
+            mamba create -y -n ont_assembly -c conda-forge -c anaconda -c bioconda -c defaults artic exonerate
+            mamba create -y -n ont_qc -c conda-forge -c anaconda -c bioconda -c defaults python=3.6 pycoqc
+            mamba create -y -n plot -c conda-forge -c anaconda -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
+        else
+            mamba update -y -n ont_assembly -c conda-forge -c anaconda -c bioconda -c defaults --all
+            mamba update -y -n ont_qc -c conda-forge -c anaconda -c bioconda -c defaults --all
+            mamba update -y -n plot -c conda-forge -c anaconda -c bioconda -c defaults --all
+        fi
     else
-        mamba update -y -n base conda
-        mamba create -y -n ont_assembly -c conda-forge -c bioconda -c defaults artic exonerate
-        mamba create -y -n ont_qc -c conda-forge -c bioconda -c defaults toulligqc
-        mamba create -y -n plot -c conda-forge -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
+        mamba update -y -c conda-forge -c anaconda -c bioconda -c defaults -n base conda
+        if [[ -z "$(conda env list | grep "ont_assembly|ont_qc|plot")" ]]; then
+            mamba create -y -n ont_assembly -c conda-forge -c anaconda -c bioconda -c defaults artic exonerate
+            mamba create -y -n ont_qc -c conda-forge -c anaconda -c bioconda -c defaults python=3.6 pycoqc
+            mamba create -y -n plot -c conda-forge -c anaconda -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
+        else
+            mamba update -y -n ont_assembly -c conda-forge -c anaconda -c bioconda -c defaults --all
+            mamba update -y -n ont_qc -c conda-forge -c anaconda -c bioconda -c defaults --all
+            mamba update -y -n plot -c conda-forge -c anaconda -c bioconda -c defaults --all
+       fi
     fi
 fi
 
-cd; git clone https://github.com/RPGillespie6/fastcov.git; cd fastcov
+if [[ -z "$(which fastcov.py)" ]]; then
+    cd
+    git clone https://github.com/RaverJay/fastcov
+    cd fastcov
+    echo 'export PATH=$HOME/fastcov:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.${MYSHELL}rc
+    export PATH=$HOME/fastcov:/usr/local/share/rsi/idl/bin:$PATH
+else
+    source activate plot
+    fastcov.py --help
+fi
 
-echo 'export PATH=$HOME/fastcov:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.${MYSHELL}rc
-echo 'export PATH=$HOME/vgapWGS-ONT/SCRIPTS:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.${MYSHELL}rc
+if [[ ! -d $HOME/bin ]]; then
+    mkdir -vp $HOME/bin
+    ln -s $(echo $PWD/SCRIPTS/MINION) $HOME/bin
+else
+    ln -s $(echo $PWD/SCRIPTS/MINION) $HOME/bin
+fi
