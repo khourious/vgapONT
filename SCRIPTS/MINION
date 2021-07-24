@@ -18,7 +18,7 @@ Usage: $(basename $0) [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS]
 -r  The FULL PATH to the directory containing the raw sequencing data (fast5 files).
 -s  The FULL PATH to the sample sheet (.csv) file.
 -d  Generates depth plots in PDF file from BAM files to briefly check coverages.
--t  Number of tasks to process concurrently.
+-t  Number of tasks to process concurrently."
 	exit 1
 fi
 
@@ -45,4 +45,4 @@ bg() {
 
 }
 
-bg $1 $2 $3 &>"$VGAP/LIBRARIES/$(basename $RAWPATH)"_log.txt &
+bg $1 $2 $3 &>>"$VGAP/LIBRARIES/$(basename $RAWPATH)"_log.txt &
