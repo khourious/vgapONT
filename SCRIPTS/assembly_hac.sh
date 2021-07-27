@@ -58,15 +58,14 @@ cd $LIBRARY_PATH/$LIBRARY_NAME/ANALYSIS
 for i in $(cat "$CSV"); do
     SAMPLE=$(echo "$i" | awk -F, '{print $1}' | sed '/^$/d')
     BARCODE=$(echo "$i"| awk -F, '{print $2}' | sed '/^$/d')
-    BARCODENB=$(echo "$BARCODE" | sed -e 's/BC//g')
     if [ $(echo "$BARCODE" | awk '{if ($0 ~ /-/) {print "yes"} else {print "no"}}') == "yes" ]; then for i in $(echo "$BARCODE" | tr '-' '\n'); do cat $LIBRARY_PATH/$LIBRARY_NAME/ANALYSIS/"$i"_"$LIBRARY_NAME".fastq; done > $LIBRARY_PATH/$LIBRARY_NAME/ANALYSIS/"$BARCODE"_"$LIBRARY_NAME".fastq ; fi
-    artic minion --threads "$THREADS" --medaka --medaka-model r941_min_high_g360 --normalise 1000 --read-file $LIBRARY_PATH/$LIBRARY_NAME/ANALYSIS/"$BARCODE"_"$LIBRARY_NAME".fastq --scheme-directory $VGAP/PRIMER_SCHEMES "$PRIMER_SCHEME" "$SAMPLE"
-    echo -n "$SAMPLE""#" | tr '#' '\t' >> $LIBRARY_PATH/$LIBRARY_NAME/ANALYSIS/"$LIBRARY_NAME".stats.txt
-    samtools view -F 0x904 -c "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{printf $1"#"}' | tr '#' '\t' >> $LIBRARY_PATH/$LIBRARY_NAME/ANALYSIS/"$LIBRARY_NAME".stats.txt
-    samtools depth "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{sum+=$3} END {print sum/NR}' | awk '{printf $1"#"}' | tr '#' '\t' >> ' >> $LIBRARY_PATH/$LIBRARY_NAME/ANALYSIS/"$LIBRARY_NAME".stats.txt
-    paste <(samtools depth "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"20"') {print $0}}' | wc -l) <(fastalength $VGAP/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.4f\n", $1/$2*100)}' awk '{printf $1"#"}' | tr '#' '\t' >> ' >> $LIBRARY_PATH/$LIBRARY_NAME/ANALYSIS/"$LIBRARY_NAME".stats.txt
-    paste <(samtools depth "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"100"') {print $0}}' | wc -l) <(fastalength $VGAP/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.4f\n", $1/$2*100)}' awk '{printf $1"#"}' | tr '#' '\t' >> ' >> $LIBRARY_PATH/$LIBRARY_NAME/ANALYSIS/"$LIBRARY_NAME".stats.txt
-    paste <(samtools depth "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"1000"') {print $0}}' | wc -l) <(fastalength $VGAP/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.4f\n", $1/$2*100)}' awk '{printf $1"#"}' | tr '#' '\t' >> ' >> $LIBRARY_PATH/$LIBRARY_NAME/ANALYSIS/"$LIBRARY_NAME".stats.txt
+    artic minion --threads "$THREADS" --medaka --medaka-model r941_min_high_g360 --normalise 200 --read-file $LIBRARY_PATH/$LIBRARY_NAME/ANALYSIS/"$BARCODE"_"$LIBRARY_NAME".fastq --scheme-directory $VGAP/PRIMER_SCHEMES "$PRIMER_SCHEME" "$SAMPLE"
+#    echo -n "$SAMPLE""#" | tr '#' '\t' >> $LIBRARY_PATH/$LIBRARY_NAME/ANALYSIS/"$LIBRARY_NAME".stats.txt
+#    samtools view -F 0x904 -c "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{printf $1"#"}' | tr '#' '\t' >> $LIBRARY_PATH/$LIBRARY_NAME/ANALYSIS/"$LIBRARY_NAME".stats.txt
+#    samtools depth "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{sum+=$3} END {print sum/NR}' | awk '{printf $1"#"}' | tr '#' '\t' >> ' >> $LIBRARY_PATH/$LIBRARY_NAME/ANALYSIS/"$LIBRARY_NAME".stats.txt
+#    paste <(samtools depth "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"20"') {print $0}}' | wc -l) <(fastalength $VGAP/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.4f\n", $1/$2*100)}' awk '{printf $1"#"}' | tr '#' '\t' >> ' >> $LIBRARY_PATH/$LIBRARY_NAME/ANALYSIS/"$LIBRARY_NAME".stats.txt
+#    paste <(samtools depth "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"100"') {print $0}}' | wc -l) <(fastalength $VGAP/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.4f\n", $1/$2*100)}' awk '{printf $1"#"}' | tr '#' '\t' >> ' >> $LIBRARY_PATH/$LIBRARY_NAME/ANALYSIS/"$LIBRARY_NAME".stats.txt
+#    paste <(samtools depth "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"1000"') {print $0}}' | wc -l) <(fastalength $VGAP/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.4f\n", $1/$2*100)}' awk '{printf $1"#"}' | tr '#' '\t' >> ' >> $LIBRARY_PATH/$LIBRARY_NAME/ANALYSIS/"$LIBRARY_NAME".stats.txt
 done
 
 #cat *.consensus.fasta > "$library".consensus.fasta
