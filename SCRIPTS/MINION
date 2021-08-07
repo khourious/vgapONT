@@ -26,17 +26,23 @@ fi
 
 VGAP=$(find $HOME -type d -name "vgapWGS-ONT")
 
+LIBRARY_NAME=$(basename "$SAMPLESHEET" | awk -F. '{print $1}')
+
 bg() {
 
     start=$(date +%s.%N)
 
-    $VGAP/SCRIPTS/assembly_hac.sh $SAMPLESHEET $RAWPATH $THREADS $GPUMEM
+    "$VGAP"/SCRIPTS/assembly_hac.sh "$SAMPLESHEET" "$RAWPATH" "$THREADS" "$GPUMEM"
 
     source activate plot
 
     if [[ -n "$PLOTDEPTH" ]]; then
-        for i in $(find $VGAP/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/ -type f -name "*.primertrimmed.rg.sorted.bam" | while read o; do basename $o | awk -F. '{print $1}'; done | sort -u); do fastcov -l $VGAP/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/"$i".primertrimmed.rg.sorted.bam -o $VGAP/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/"$i".coverage.pdf; done
-        gs -dSAFER -r3000 -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -sOUTPUTFILE=$VGAP/LIBRARIES/$(basename $RAWPATH)/CONSENSUS/$(basename $RAWPATH).depth.pdf $VGAP/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.pdf
+        for i in $(find "$VGAP"/LIBRARIES/"$LIBRARY_NAME"/ASSEMBLY/ -type f -name "*.primertrimmed.rg.sorted.bam" | \
+            awk -F/ '{print $NF}' | awk -F. '{print $1}' | sort -u); do \
+            fastcov.py -l "$VGAP"/LIBRARIES/"$LIBRARY_NAME"/ASSEMBLY/"$i".primertrimmed.rg.sorted.bam \
+            -o "$VGAP"/LIBRARIES/"$LIBRARY_NAME"/ASSEMBLY/"$i".coverage.pdf; done
+        gs -dSAFER -r3000 -sDEVICE=pdfwrite -dNOPAUSE -dBATCH \
+            -sOUTPUTFILE="$VGAP"/LIBRARIES/"$LIBRARY_NAME"/CONSENSUS/"$LIBRARY_NAME".depth.pdf "$VGAP"/LIBRARIES/"$LIBRARY_NAME"/ASSEMBLY/*.pdf
     fi
 
     end=$(date +%s.%N)
@@ -47,4 +53,4 @@ bg() {
 
 }
 
-bg $1 $2 $3 $4 &>>"$VGAP/LIBRARIES/$(basename $RAWPATH)"_log.txt &
+bg $1 $2 $3 $4 &>>"$VGAP"/LIBRARIES/"$LIBRARY_NAME"_log.txt &
