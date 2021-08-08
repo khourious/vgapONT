@@ -1,7 +1,8 @@
 #!/bin/bash
 
-while getopts ":g:r:s:t:" OPT; do
+while getopts ":b:g:r:s:t:" OPT; do
     case $OPT in
+        b ) BASECALL="$OPTARG";;
         g ) GPUMEM="$OPTARG";;
         r ) RAWPATH="$OPTARG";;
         s ) SAMPLESHEET="$OPTARG";;
@@ -10,15 +11,16 @@ while getopts ":g:r:s:t:" OPT; do
 done
 shift $((OPTIND -1))
 
-if [[ -z "$RAWPATH" ]] || [[ -z "$SAMPLESHEET" ]] || [[ -z "$THREADS" ]] || [[ -z "$GPUMEM" ]]; then
+if [[ -z "$BASECALL" ]] || [[ -z "$RAWPATH" ]] || [[ -z "$SAMPLESHEET" ]] || [[ -z "$THREADS" ]] || [[ -z "$GPUMEM" ]]; then
     echo "Assembly pipeline for WGS using ONT
 
 Usage: $(basename $0) [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS] [-g GPUMEM] [-d]
 
+-b  The basecalling accuracy model to aply: 'fast' or 'hac' or 'sup'.
+-g  VRAM to determine the number of runners per GPU device (i.e.: RTX 2060='6'; RTX 2080='8').
 -r  Path containing the fast5 sequencing data.
 -s  Path containing the sample sheet in .csv.
--t  Number of CPU worker threads (i.e.: i7-9750H=12).
--g  GPU memory to determine the number of runners per GPU device (i.e.: RTX 2060=6; RTX 2080=8)."
+-t  Number of CPU worker threads (i.e.: i7-9750H='12')."
     exit 1
 fi
 
@@ -30,7 +32,13 @@ bg() {
 
     start=$(date +%s.%N)
 
-    "$VGAP"/SCRIPTS/assembly_hac.sh "$SAMPLESHEET" "$RAWPATH" "$THREADS" "$GPUMEM"
+    if [[ -n "$BASECALL" == fast ]]; then
+        "$VGAP"/SCRIPTS/assembly_fast.sh "$SAMPLESHEET" "$RAWPATH" "$THREADS" "$GPUMEM"
+    fi
+
+    if [[ -n "$BASECALL" == hac ]]; then
+        "$VGAP"/SCRIPTS/assembly_hac.sh "$SAMPLESHEET" "$RAWPATH" "$THREADS" "$GPUMEM"
+    fi
 
     end=$(date +%s.%N)
 
