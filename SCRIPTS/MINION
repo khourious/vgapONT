@@ -11,10 +11,10 @@ while getopts ":b:g:r:s:t:" OPT; do
 done
 shift $((OPTIND -1))
 
-if [[ -z "$BASECALL" ]] || [[ -z "$RAWPATH" ]] || [[ -z "$SAMPLESHEET" ]] || [[ -z "$THREADS" ]] || [[ -z "$GPUMEM" ]]; then
+if [[ -z "$BASECALL" ]] || [[ -z "$GPUMEM" ]] || [[ -z "$RAWPATH" ]] || [[ -z "$SAMPLESHEET" ]] || [[ -z "$THREADS" ]]; then
     echo "Assembly pipeline for WGS using ONT
 
-Usage: $(basename $0) [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS] [-g GPUMEM] [-d]
+Usage: $(basename $0) [-b BASECALL] [-g GPUMEM] [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS]
 
 -b  The basecalling accuracy model to aply: 'fast' or 'hac' or 'sup'.
 -g  VRAM to determine the number of runners per GPU device (i.e.: RTX 2060='6'; RTX 2080='8').
