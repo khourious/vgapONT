@@ -26,7 +26,7 @@ MAX=$(paste <(awk -F"\t" '$4~/RIGHT|R|REVERSE|REV|RV|R/ {print $2}' "$VGAP"/PRIM
 <(awk -F"\t" '$4~/LEFT|L|FORWARD|FWD|FW|F/ {print $3}' "$VGAP"/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".scheme.bed) | \
 awk -F"\t" '{print $1-$2}' | awk '{if ($0>0) print $0+200}' | sort -nr | sed -n '1p')
 
-mkdir "$LIBRARY_PATH"/"$LIBRARY_NAME" "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY "$LIBRARY_PATH"/"$LIBRARY_NAME"/CONSENSUS -v
+mkdir "$LIBRARY_PATH"/"$LIBRARY_NAME" "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY "$LIBRARY_PATH"/"$LIBRARY_NAME"/SUMMARY -v
 
 guppy_basecaller -r -x auto --verbose_logs --disable_pings \
 -c dna_r9.4.1_450bps_hac.cfg -i "$FAST5" -s "$LIBRARY_PATH"/"$LIBRARY_NAME"/BASECALL \
@@ -60,37 +60,49 @@ for i in $(cat "$CSV"); do
         for i in $(echo "$BARCODE" | tr '-' '\n'); do cat "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$i"_"$LIBRARY_NAME".fastq; done \
         > "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$BARCODE"_"$LIBRARY_NAME".fastq; fi
     artic minion --medaka --medaka-model r941_min_high_g360 --normalise 0 --threads "$THREADS" \
-        --read-file "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$BARCODE"_"$LIBRARY_NAME".fastq \
-        --scheme-directory "$VGAP"/PRIMER_SCHEMES "$PRIMER_SCHEME" "$SAMPLE"
+    --read-file "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$BARCODE"_"$LIBRARY_NAME".fastq \
+    --scheme-directory "$VGAP"/PRIMER_SCHEMES "$PRIMER_SCHEME" "$SAMPLE"
     echo -n "$SAMPLE""#" | tr '#' '\t' >> "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$LIBRARY_NAME".stats.txt
     samtools view -F 0x904 -c "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{printf $1"#"}' | tr '#' '\t' \
-        >> "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$LIBRARY_NAME".stats.txt
+    >> "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$LIBRARY_NAME".stats.txt
     samtools depth "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{sum+=$3} END {print sum/NR}' | awk '{printf $1"#"}' | tr '#' '\t' \
-        >> "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$LIBRARY_NAME".stats.txt
+    >> "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$LIBRARY_NAME".stats.txt
     paste <(samtools depth "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"10"') {print $0}}' | wc -l) \
-        <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".reference.fasta | awk '{print $1}') | \
-        awk -F"\t" '{printf("%0.4f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\t' \
-        >> "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$LIBRARY_NAME".stats.txt
+    <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".reference.fasta | awk '{print $1}') | \
+    awk -F"\t" '{printf("%0.4f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\t' \
+    >> "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$LIBRARY_NAME".stats.txt
     paste <(samtools depth "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"20"') {print $0}}' | wc -l) \
-        <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".reference.fasta | awk '{print $1}') | \
-        awk -F"\t" '{printf("%0.4f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\t' \
-        >> "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$LIBRARY_NAME".stats.txt
+    <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".reference.fasta | awk '{print $1}') | \
+    awk -F"\t" '{printf("%0.4f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\t' \
+    >> "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$LIBRARY_NAME".stats.txt
     paste <(samtools depth "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"100"') {print $0}}' | wc -l) \
-        <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".reference.fasta | awk '{print $1}') | \
-        awk -F"\t" '{printf("%0.4f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\t' \
-        >> "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$LIBRARY_NAME".stats.txt
+    <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".reference.fasta | awk '{print $1}') | \
+    awk -F"\t" '{printf("%0.4f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\t' \
+    >> "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$LIBRARY_NAME".stats.txt
     paste <(samtools depth "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"1000"') {print $0}}' | wc -l) \
-        <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".reference.fasta | awk '{print $1}') | \
-        awk -F"\t" '{printf("%0.4f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\n' \
-        >> "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$LIBRARY_NAME".stats.txt
+    <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".reference.fasta | awk '{print $1}') | \
+    awk -F"\t" '{printf("%0.4f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\n' \
+    >> "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$LIBRARY_NAME".stats.txt
 done
+
+source activate plot
+
+for i in $(find "$VGAP"/LIBRARIES/"$LIBRARY_NAME"/ASSEMBLY/ -type f -name "*.primertrimmed.rg.sorted.bam" | \
+awk -F/ '{print $NF}' | awk -F. '{print $1}' | sort -u); do
+    fastcov.py -l "$VGAP"/LIBRARIES/"$LIBRARY_NAME"/ASSEMBLY/"$i".primertrimmed.rg.sorted.bam \
+    -o "$VGAP"/LIBRARIES/"$LIBRARY_NAME"/ASSEMBLY/"$i".coverage.pdf
+done
+
+gs -dSAFER -r3000 -sDEVICE=pdfwrite -dNOPAUSE -dBATCH \
+-sOUTPUTFILE="$VGAP"/LIBRARIES/"$LIBRARY_NAME"/SUMMARY/"$LIBRARY_NAME".depth.pdf \
+"$VGAP"/LIBRARIES/"$LIBRARY_NAME"/ASSEMBLY/*.pdf
 
 cat *.consensus.fasta > "$LIBRARY_NAME".consensus.fasta
 
 rm -rf *.reference.fasta*
 
-mv "$LIBRARY_NAME".consensus.fasta ../CONSENSUS -v
+mv "$LIBRARY_NAME".consensus.fasta ../SUMMARY -v
 
-mv "$LIBRARY_NAME".stats.txt ../CONSENSUS -v
+mv "$LIBRARY_NAME".stats.txt ../SUMMARY -v
 
 tar -czf "$LIBRARY_PATH"/"$LIBRARY_NAME".tar.gz -P "$LIBRARY_PATH"/"$LIBRARY_NAME"/*
