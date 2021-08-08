@@ -1,80 +1,108 @@
 #!/bin/bash
 
 CSV=$1
+
 FAST5=$2
+
 THREADS=$3
-CUDACORES=$4
-NUMCALLERS=$5
+
+GPU_MEMORY=$($4 * 2)
 
 VGAP=$(find $HOME -type d -name "vgapWGS-ONT")
 
-LIBPATH=$VGAP/LIBRARIES
+LIBRARY_PATH="$VGAP"/LIBRARIES
 
-LIBNAME=$(basename "$CSV" | awk -F. '{print $1}')
+LIBRARY_NAME=$(basename "$CSV" | awk -F. '{print $1}')
 
-PRIMERSCHEME=$(cat "$CSV" | awk -F, '{print $3}' | sed -n '1p')
+PRIMER_SCHEME=$(cat "$CSV" | awk -F, '{print $3}' | uniq)
 
-REFSEQ=$(cat "$CSV" | awk -F, '{print $3}' | awk -F/ '{print $2}')
+REFSEQ=$(cat "$CSV" | awk -F, '{print $3}' | awk -F/ '{print $1}' | uniq)
 
-[ ! -d $LIBPAH ] && mkdir $LIBPATH -v
+MIN=$(paste <(awk -F"\t" '$4~/RIGHT|R|REVERSE|REV|RV|R/ {print $2}' "$VGAP"/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".scheme.bed) \
+<(awk -F"\t" '$4~/LEFT|L|FORWARD|FWD|FW|F/ {print $3}' "$VGAP"/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".scheme.bed) | \
+awk -F"\t" '{print $1-$2}' | awk '{if ($0>0) print $0}' | sort -n | sed -n '1p')
 
-[ -d $LIBPATH/$LIBNAME ] && rm -rfd $LIBPATH/$LIBNAME
+MAX=$(paste <(awk -F"\t" '$4~/RIGHT|R|REVERSE|REV|RV|R/ {print $2}' "$VGAP"/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".scheme.bed) \
+<(awk -F"\t" '$4~/LEFT|L|FORWARD|FWD|FW|F/ {print $3}' "$VGAP"/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".scheme.bed) | \
+awk -F"\t" '{print $1-$2}' | awk '{if ($0>0) print $0+200}' | sort -nr | sed -n '1p')
 
-mkdir $LIBPATH/$LIBNAME $LIBPATH/$LIBNAME/ANALYSIS $LIBPATH/$LIBNAME/CONSENSUS -v
+mkdir "$LIBRARY_PATH"/"$LIBRARY_NAME" "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY "$LIBRARY_PATH"/"$LIBRARY_NAME"/SUMMARY -v
 
-cd $LIBPATH/$LIBNAME
+guppy_basecaller -r -x auto --verbose_logs --disable_pings \
+-c dna_r9.4.1_450bps_fast.cfg -i "$FAST5" -s "$LIBRARY_PATH"/"$LIBRARY_NAME"/BASECALL \
+--gpu_runners_per_device "$GPU_MEMORY" --chunks_per_runner 2000 --chunk_size 2000 \
+--num_callers "$THREADS" --min_qscore 7
 
-guppy_basecaller -r -x auto --verbose_logs \
--c dna_r9.4.1_450bps_sup.cfg \
--i "$FAST5" -s BASECALL \
--q 1 --min_qscore 9 \
---chunk_size 1000 \
---num_callers 6 \
---gpu_runners_per_device 2
-
-guppy_barcoder -r --require_barcodes_both_ends --trim_barcodes -t "$THREADS" \
--i BASECALL -s DEMUX \
---arrangements_files "barcode_arrs_nb12.cfg barcode_arrs_nb24.cfg"
-
-cd ANALYSIS
+guppy_barcoder -r --require_barcodes_both_ends --trim_barcodes -t "$THREADS" -x auto \
+-i "$LIBRARY_PATH"/"$LIBRARY_NAME"/BASECALL -s "$LIBRARY_PATH"/"$LIBRARY_NAME"/DEMUX
 
 source activate ont_qc
 
-#pycoQC -q \
-#-f ../BASECALL/sequencing_summary.txt -b ../DEMUX/barcoding_summary.txt -o "$library"_QC.html --report_title "$library"
+pycoQC -q -f "$LIBRARY_PATH"/"$LIBRARY_NAME"/BASECALL/sequencing_summary.txt \
+-b "$LIBRARY_PATH"/"$LIBRARY_NAME"/DEMUX/barcoding_summary.txt \
+-o "$LIBRARY_PATH"/"$LIBRARY_NAME"/"$LIBRARY_NAME"_QC.html --report_title "$LIBRARY_NAME"
 
-#cp ../../../PRIMER_SCHEMES/"$primerscheme"/"$ref".reference.fasta "$ref".reference.fasta -v
+source activate ont_assembly
 
-#cp ../../../PRIMER_SCHEMES/"$primerscheme"/"$ref".scheme.bed "$ref".scheme.bed -v
+for i in $(find "$LIBRARY_PATH"/"$LIBRARY_NAME"/DEMUX -type d -name "barcode*" | sort); do \
+artic guppyplex --min-length "$MIN" --max-length "$MAX" --directory "$i" \
+--output "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/BC"$(basename $i | awk -Fe '{print $2}')"_"$LIBRARY_NAME".fastq; done
 
-#min=`cat "$ref".scheme.bed | awk -F"\t" '{print $2,$3}' | tr '\n' ' ' | awk '{for (i=1;i<=(NF/2);i=i+2) {print $(i*2+1)-$(i*2)}}' | awk '{for (i=1;i<=NF;i++) if ($i>=0) print $i} ' | sort -n | awk 'NR==1{print}' | awk '{print $1}'`
+echo "SampleId#NumberReadsMapped#AverageDepth#Coverage10x#Coverage20x#Coverage100x#Coverage1000x" | \
+tr '#' '\t' > "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$LIBRARY_NAME".stats.txt
 
-#max=`cat "$ref".scheme.bed | awk -F"\t" '{print $2,$3}' | tr '\n' ' ' | awk '{for (i=1;i<=(NF/2);i=i+2) {print $(i*2+1)-$(i*2)}}' | awk '{for (i=1;i<=NF;i++) if ($i>=0) print $i} ' | sort -nr | awk 'NR==1{print}' | awk '{print $1+200}'`
+cd "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY
 
-#echo "Sample@Nb of reads mapped@Average depth coverage@Bases covered >10x@Bases covered >25x@Reference covered (%)" | tr '@' '\t' > "$library".stats.txt
+for i in $(cat "$CSV"); do
+    SAMPLE=$(echo "$i" | awk -F, '{print $1}' | sed '/^$/d')
+    BARCODE=$(echo "$i"| awk -F, '{print $2}' | sed '/^$/d')
+    if [ $(echo "$BARCODE" | awk '{if ($0 ~ /-/) {print "yes"} else {print "no"}}') == "yes" ]; then \
+        for i in $(echo "$BARCODE" | tr '-' '\n'); do cat "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$i"_"$LIBRARY_NAME".fastq; done \
+        > "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$BARCODE"_"$LIBRARY_NAME".fastq; fi
+    artic minion --normalise 0 --threads "$THREADS" --read-file "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$BARCODE"_"$LIBRARY_NAME".fastq \
+    --fast5-directory "$FAST5" --sequencing-summary "$LIBRARY_PATH"/"$LIBRARY_NAME"/BASECALL/sequencing_summary.txt \
+    --scheme-directory "$VGAP"/PRIMER_SCHEMES "$PRIMER_SCHEME" "$SAMPLE"
+    echo -n "$SAMPLE""#" | tr '#' '\t' >> "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$LIBRARY_NAME".stats.txt
+    samtools view -F 0x904 -c "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{printf $1"#"}' | tr '#' '\t' \
+    >> "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$LIBRARY_NAME".stats.txt
+    samtools depth "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{sum+=$3} END {print sum/NR}' | awk '{printf $1"#"}' | tr '#' '\t' \
+    >> "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$LIBRARY_NAME".stats.txt
+    paste <(samtools depth "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"10"') {print $0}}' | wc -l) \
+    <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".reference.fasta | awk '{print $1}') | \
+    awk -F"\t" '{printf("%0.4f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\t' \
+    >> "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$LIBRARY_NAME".stats.txt
+    paste <(samtools depth "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"20"') {print $0}}' | wc -l) \
+    <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".reference.fasta | awk '{print $1}') | \
+    awk -F"\t" '{printf("%0.4f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\t' \
+    >> "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$LIBRARY_NAME".stats.txt
+    paste <(samtools depth "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"100"') {print $0}}' | wc -l) \
+    <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".reference.fasta | awk '{print $1}') | \
+    awk -F"\t" '{printf("%0.4f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\t' \
+    >> "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$LIBRARY_NAME".stats.txt
+    paste <(samtools depth "$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"1000"') {print $0}}' | wc -l) \
+    <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMER_SCHEME"/"$REFSEQ".reference.fasta | awk '{print $1}') | \
+    awk -F"\t" '{printf("%0.4f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\n' \
+    >> "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY/"$LIBRARY_NAME".stats.txt
+done
 
-#source activate ont_assembly
+source activate plot
 
-#for i in $(find ../DEMUX -type d -name "barcode*"); do artic guppyplex --min-length "$min" --max-length "$max" --directory "$i" --prefix "$library" ; mv "$library"_"$(basename $i)".fastq BC"$(basename $i | cut -de -f2)"_"$library".fastq -v ; done
+for i in $(find "$VGAP"/LIBRARIES/"$LIBRARY_NAME"/ASSEMBLY/ -type f -name "*.primertrimmed.rg.sorted.bam" | \
+awk -F/ '{print $NF}' | awk -F. '{print $1}' | sort -u); do
+    fastcov.py -l "$VGAP"/LIBRARIES/"$LIBRARY_NAME"/ASSEMBLY/"$i".primertrimmed.rg.sorted.bam \
+    -o "$VGAP"/LIBRARIES/"$LIBRARY_NAME"/ASSEMBLY/"$i".coverage.pdf
+done
 
-#for i in `cat "$csv"`;
-#	do
-#		sample=`echo "$i" | awk -F"," '{print $1}' | sed '/^$/d'`
-#		barcode=`echo "$i"| awk -F"," '{print $2}' | sed '/^$/d'`
-#		barcodeNB=`echo "$barcode" | sed -e 's/BC//g'`
-#		if [ `echo "$barcode" | awk '{if ($0 ~ /-/) {print "yes"} else {print "no"}}'` == "yes" ] ; then for i in `echo "$barcode" | tr '-' '\n'` ; do cat "$i"_"$library".fastq ; done > "$barcode"_"$library".fastq ; fi
-#		artic minion --threads "$threads" --medaka --medaka-model r941_min_high_g360 --normalise 200 --read-file "$barcode"_"$library".fastq --scheme-directory ../../../PRIMER_SCHEMES "$primerscheme" "$sample"
-#		stats.sh "$sample" "$library" "$primerscheme"
-#	done
+gs -dSAFER -r3000 -sDEVICE=pdfwrite -dNOPAUSE -dBATCH \
+-sOUTPUTFILE="$VGAP"/LIBRARIES/"$LIBRARY_NAME"/SUMMARY/"$LIBRARY_NAME".depth.pdf \
+"$VGAP"/LIBRARIES/"$LIBRARY_NAME"/ASSEMBLY/*.pdf
 
-#cat *.consensus.fasta > "$library".consensus.fasta
+cat *.consensus.fasta > "$LIBRARY_NAME".consensus.fasta
 
-#mv "$library".consensus.fasta ../CONSENSUS -v
+rm -rf *.reference.fasta*
 
-#mv "$library".stats.txt ../CONSENSUS -v
+mv "$LIBRARY_NAME".consensus.fasta ../SUMMARY -v
 
-#rm -rf $VGAP/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.reference.fasta*
+mv "$LIBRARY_NAME".stats.txt ../SUMMARY -v
 
- #   rm -rf $VGAP/LIBRARIES/$(basename $RAWPATH)/ANALYSIS/*.score.bed
-
-#    tar -czf $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH).tar.gz -P $HOME/VirWGS/LIBRARIES/$(basename $RAWPATH)*
+tar -czf "$LIBRARY_PATH"/"$LIBRARY_NAME".tar.gz -P "$LIBRARY_PATH"/"$LIBRARY_NAME"/*
