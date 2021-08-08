@@ -1,12 +1,11 @@
 #!/bin/bash
 
-while getopts ":r:s:g:t:d:" OPT; do
+while getopts ":g:r:s:t:" OPT; do
     case $OPT in
+        g ) GPUMEM="$OPTARG";;
         r ) RAWPATH="$OPTARG";;
         s ) SAMPLESHEET="$OPTARG";;
         t ) THREADS="$OPTARG";;
-        g ) GPUMEM="$OPTARG";;
-        d ) PLOTDEPTH=yes;;
     esac
 done
 shift $((OPTIND -1))
@@ -19,8 +18,7 @@ Usage: $(basename $0) [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS] [-g GPUMEM] [-d
 -r  Path containing the fast5 sequencing data.
 -s  Path containing the sample sheet in .csv.
 -t  Number of CPU worker threads (i.e.: i7-9750H=12).
--g  GPU memory to determine the number of runners per GPU device (i.e.: RTX 2060=6; RTX 2080=8).
--d  Generates depth plots in PDF file from BAM files to briefly check coverages."
+-g  GPU memory to determine the number of runners per GPU device (i.e.: RTX 2060=6; RTX 2080=8)."
     exit 1
 fi
 
@@ -33,17 +31,6 @@ bg() {
     start=$(date +%s.%N)
 
     "$VGAP"/SCRIPTS/assembly_hac.sh "$SAMPLESHEET" "$RAWPATH" "$THREADS" "$GPUMEM"
-
-    source activate plot
-
-    if [[ -n "$PLOTDEPTH" ]]; then
-        for i in $(find "$VGAP"/LIBRARIES/"$LIBRARY_NAME"/ASSEMBLY/ -type f -name "*.primertrimmed.rg.sorted.bam" | \
-            awk -F/ '{print $NF}' | awk -F. '{print $1}' | sort -u); do \
-            fastcov.py -l "$VGAP"/LIBRARIES/"$LIBRARY_NAME"/ASSEMBLY/"$i".primertrimmed.rg.sorted.bam \
-            -o "$VGAP"/LIBRARIES/"$LIBRARY_NAME"/ASSEMBLY/"$i".coverage.pdf; done
-        gs -dSAFER -r3000 -sDEVICE=pdfwrite -dNOPAUSE -dBATCH \
-            -sOUTPUTFILE="$VGAP"/LIBRARIES/"$LIBRARY_NAME"/CONSENSUS/"$LIBRARY_NAME".depth.pdf "$VGAP"/LIBRARIES/"$LIBRARY_NAME"/ASSEMBLY/*.pdf
-    fi
 
     end=$(date +%s.%N)
 
