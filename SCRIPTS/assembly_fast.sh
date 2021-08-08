@@ -40,7 +40,7 @@ source activate ont_qc
 
 pycoQC -q -f "$LIBRARY_PATH"/"$LIBRARY_NAME"/BASECALL/sequencing_summary.txt \
 -b "$LIBRARY_PATH"/"$LIBRARY_NAME"/DEMUX/barcoding_summary.txt \
--o "$LIBRARY_PATH"/"$LIBRARY_NAME"/"$LIBRARY_NAME"_QC.html --report_title "$LIBRARY_NAME"
+-o "$LIBRARY_PATH"/"$LIBRARY_NAME"/SUMMARY/"$LIBRARY_NAME"_QC.html --report_title "$LIBRARY_NAME"
 
 source activate ont_assembly
 
