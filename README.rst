@@ -7,13 +7,13 @@ This repository contains scripts and files to run the bioinformatic analysis of 
 
     Assembly pipeline for WGS using ONT
 
-    Usage: MINION [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS] [-g GPUMEM] [-d]
+    Usage: MINION [-b BASECALL] [-g GPUMEM] [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS]
 
+    -b  The basecalling accuracy model to aply: 'fast' or 'hac' or 'sup'.
+    -g  VRAM to determine the number of runners per GPU device (i.e.: RTX 2060='6'; RTX 2080='8').
     -r  Path containing the fast5 sequencing data.
     -s  Path containing the sample sheet in .csv.
-    -t  Number of CPU worker threads (i.e.: i7-9750H=12).
-    -g  GPU memory to determine the number of runners per GPU device (i.e.: RTX 2060=6; RTX 2080=8).
-    -d  Generates depth plots in PDF file from BAM files to briefly check coverages."
+    -t  Number of CPU worker threads (i.e.: i7-9750H='12').
 
 =======================
 Setting up the pipeline
@@ -37,11 +37,11 @@ The csv file name **corresponds to the library name** and contains: sample,barco
 
 .. code:: bash
 
-    sample01,BC01,nCoV-2019/ARTIC_V3
-    sample02,BC02,nCoV-2019/ARTIC_V3
+    sample01,BC01,nCoV-2019/V3
+    sample02,BC02,nCoV-2019/V3
 
 You can combine pool A and B if they are on 2 different barcodes:
 
 .. code:: bash
 
-    sample01,BC01-BC02,nCoV-2019/ARTIC_V3
+    sample03,BC03-BC04,nCoV-2019/V3
