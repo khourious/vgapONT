@@ -32,11 +32,11 @@ bg() {
 
     start=$(date +%s.%N)
 
-    if [[ -n "$BASECALL" == fast ]]; then
+    if [[ "$BASECALL" = "fast" ]]; then
         "$VGAP"/SCRIPTS/assembly_fast.sh "$SAMPLESHEET" "$RAWPATH" "$THREADS" "$GPUMEM"
     fi
 
-    if [[ -n "$BASECALL" == hac ]]; then
+    if [[ "$BASECALL" = "hac" ]]; then
         "$VGAP"/SCRIPTS/assembly_hac.sh "$SAMPLESHEET" "$RAWPATH" "$THREADS" "$GPUMEM"
     fi
 
