@@ -6,7 +6,7 @@ FAST5=$2
 
 THREADS=$3
 
-GPU_MEMORY=$($4 * 2)
+GPU_MEMORY=$4
 
 VGAP=$(find $HOME -type d -name "vgapWGS-ONT")
 
@@ -30,7 +30,7 @@ mkdir "$LIBRARY_PATH"/"$LIBRARY_NAME" "$LIBRARY_PATH"/"$LIBRARY_NAME"/ASSEMBLY "
 
 guppy_basecaller -r -x auto --verbose_logs --disable_pings \
 -c dna_r9.4.1_450bps_fast.cfg -i "$FAST5" -s "$LIBRARY_PATH"/"$LIBRARY_NAME"/BASECALL \
---gpu_runners_per_device "$GPU_MEMORY" --chunks_per_runner 2000 --chunk_size 2000 \
+--gpu_runners_per_device "$GPU_MEMORY" --chunks_per_runner 3000 --chunk_size 2000 \
 --num_callers "$THREADS" --min_qscore 7
 
 guppy_barcoder -r --require_barcodes_both_ends --trim_barcodes -t "$THREADS" -x auto \
