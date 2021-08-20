@@ -7,7 +7,7 @@ This repository contains scripts and files to run the bioinformatic analysis of 
 
     Assembly pipeline for WGS using ONT
 
-    Usage: MINION [-b BASECALL] [-g GPUMEM] [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS]
+    Usage: vgapWGS [-b BASECALL] [-g GPUMEM] [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS]
 
     -b  The basecalling accuracy model to aply: 'fast' or 'hac' or 'sup'.
     -g  VRAM to determine the number of runners per GPU device (i.e.: RTX 2060='6'; RTX 2080='8').

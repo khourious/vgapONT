@@ -70,10 +70,10 @@ fi
 if [[ ! -d $HOME/bin ]]; then
     mkdir -vp $HOME/bin
     if [[ -z "$(which MINION)" ]]; then
-        ln -s $(echo $PWD/SCRIPTS/MINION) $HOME/bin
+        ln -s $(echo $PWD/SCRIPTS/vgapWGS) $HOME/bin
     fi
 else
     if [[ -z "$(which MINION)" ]]; then
-        ln -s $(echo $PWD/SCRIPTS/MINION) $HOME/bin
+        ln -s $(echo $PWD/SCRIPTS/vgapWGS) $HOME/bin
     fi
 fi
