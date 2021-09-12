@@ -69,7 +69,7 @@ For use, requires the raw path, sample sheet path and VRAM at the command line:
     -> LIST OF AVAILABLE PRIMER SCHEMES IN THIS WORKFLOW:
     Usage: vgapWGS-ONT -l
 
-    -> BASECALLING + DEMULTIPLEXING
+    -> BASECALLING + DEMULTIPLEXING:
     Usage: vgapWGS-ONT -b <input path> -g <gpu memory> -t <number threads>
 
     -> BASECALLING + DEMULTIPLEXING + ASSEMBLY:
