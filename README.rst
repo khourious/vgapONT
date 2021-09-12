@@ -17,10 +17,9 @@ Download and install the pipeline from the github repo:
     chmod 700 -R INSTALL SCRIPTS
     bash INSTALL
 
-
-===================================
+===============================
 How to use the vgapWGS pipeline
-===================================
+===============================
 
 --------
 ILLUMINA
@@ -42,13 +41,12 @@ Only requires the raw path and the primer scheme at the command line:
     -p  Set the primer scheme information.
     -t  Max number of threads (default: all cores).
 
-
 ---
 ONT
 ---
 
-Requires to create the sample sheet (.csv). You can create in ``SAMPLE_SHEETS`` directory.
-	
+It is necessary to create the sample sheet (.csv). You can create in ``SAMPLE_SHEETS`` directory.
+
 The csv file name **corresponds to the library name** and contains: sample,barcode,primer scheme -- **NO HEADER!!**
 
 .. code:: bash
@@ -62,13 +60,8 @@ You can combine pool A and B if they are on 2 different barcodes:
 
     sample03,BC03-BC04,nCoV-2019/V3
 
-
-===
-ONT
-===
+For use, requires the raw path, sample sheet path and VRAM at the command line:
 
 .. code:: bash
 
    XXX
-
-
