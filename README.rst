@@ -22,12 +22,11 @@ Download and install the pipeline from the github repo:
 How to use the vgapWGS pipeline
 ===================================
 
-
 --------
 ILLUMINA
 --------
 
-Only requires the path containing the fastq.gz sequencing data and the primer scheme information at the command line:
+Only requires the raw path and the primer scheme at the command line:
 
 .. code:: bash
 
@@ -43,7 +42,12 @@ Only requires the path containing the fastq.gz sequencing data and the primer sc
     -p  Set the primer scheme information.
     -t  Max number of threads (default: all cores).
 
-ONT -- requires to create the sample sheet (.csv). You can create in ``SAMPLE_SHEETS`` directory.
+
+---
+ONT
+---
+
+Requires to create the sample sheet (.csv). You can create in ``SAMPLE_SHEETS`` directory.
 	
 The csv file name **corresponds to the library name** and contains: sample,barcode,primer scheme -- **NO HEADER!!**
 
