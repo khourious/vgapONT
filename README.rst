@@ -2,9 +2,12 @@ Viral genome assembly pipeline for WGS using ILLUMINA and ONT platforms
 ===================================================================
 
 This repository contains scripts and files to run the bioinformatic analysis of whole genome sequencing of viruses.
-Until now, this workflow was developed and tested for working with CHIKV and ZIKV <ZIBRAproject> and SARS-CoV-2 <ARTICnetwork> and <FIOCRUZ-IOC> primer schemes. Tests with other primer schemes should be performed.
 
--> ILLUMINA:
+Until now, this workflow was developed and tested for working with CHIKV and ZIKV <ZIBRAproject> and SARS-CoV-2 <ARTICnetwork> and <FIOCRUZ-IOC> primer schemes. **Tests with other primer schemes should be performed.**
+
+========
+ILLUMINA
+========
 
 .. code:: bash
 
@@ -20,7 +23,9 @@ Until now, this workflow was developed and tested for working with CHIKV and ZIK
     -p  Set the primer scheme information.
     -t  Max number of threads (default: all cores).
 
--> ONT
+===
+ONT
+===
 
 .. code:: bash
 
