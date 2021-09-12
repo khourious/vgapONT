@@ -1,19 +1,30 @@
-Viral genome assembly pipeline for WGS using nanopore sequencing
+Viral genome assembly pipeline for WGS using ILLUMINA and ONT platforms
 ===================================================================
 
-This repository contains scripts and files to run the bioinformatic analysis of whole genome sequencing of viruses using ONT and was built based on the ARTIC bioinformatics workflow.
+This repository contains scripts and files to run the bioinformatic analysis of whole genome sequencing of viruses.
+Until now, this workflow was developed and tested for working with CHIKV and ZIKV <ZIBRAproject> and SARS-CoV-2 <ARTICnetwork> and <FIOCRUZ-IOC> primer schemes. Tests with other primer schemes should be performed.
+
+-> ILLUMINA:
 
 .. code:: bash
 
-    Assembly pipeline for WGS using ONT
+    Viral genome assembly pipeline for WGS using ILLUMINA
 
-    Usage: vgapWGS [-b BASECALL] [-g GPUMEM] [-r RAWPATH] [-s SAMPLESHEET] [-t THREADS]
+    -> LIST OF AVAILABLE PRIMER SCHEMES IN THIS WORKFLOW:
+    Usage: vgapWGS-ILLUMINA -l
 
-    -b  The basecalling accuracy model to aply: 'fast' or 'hac' or 'sup'.
-    -g  VRAM to determine the number of runners per GPU device (i.e.: RTX 2060='6'; RTX 2080='8').
-    -r  Path containing the fast5 sequencing data.
-    -s  Path containing the sample sheet in .csv.
-    -t  Number of CPU worker threads (i.e.: i7-9750H='12').
+    -> ASSEMBLY:
+    Usage: vgapWGS-ILLUMINA -i <input path> -p <primer scheme> -t <number threads>
+
+    -i  Path containing the fastq.gz sequencing data.
+    -p  Set the primer scheme information.
+    -t  Max number of threads (default: all cores).
+
+-> ONT
+
+.. code:: bash
+
+   XXX
 
 =======================
 Setting up the pipeline
@@ -23,17 +34,19 @@ Download and install the pipeline from the github repo:
 
 .. code:: bash
 
-    git clone --recursive https://github.com/khourious/vgapWGS-ONT.git; cd vgapWGS-ONT
+    git clone --recursive https://github.com/khourious/vgapWGS.git; cd vgapWGS
     chmod 700 -R INSTALL SCRIPTS
     bash INSTALL
 
 ===================================
-How to use the vgapWGS-ONT pipeline
+How to use the vgapWGS pipeline
 ===================================
 
-Requires to create the sample sheet (.csv). You can create in ``SAMPLE_SHEETS`` directory.
+FOR ILLUMINA: requires the primer scheme information at the command line
+
+FOR ONT: requires to create the sample sheet (.csv). You can create in ``SAMPLE_SHEETS`` directory.
 	
-The csv file name **corresponds to the library name** and contains: sample,barcode,reference/version -- **NO HEADER!!**
+The csv file name **corresponds to the library name** and contains: sample,barcode,primer scheme -- **NO HEADER!!**
 
 .. code:: bash
 
