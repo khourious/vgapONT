@@ -7,7 +7,7 @@ Viral genome assembly pipeline for WGS using ONT
 -> LIST OF AVAILABLE PRIMER SCHEMES IN THIS WORKFLOW:
 Usage: $(basename "$0") -l
 
--> BASECALLING + DEMULTIPLEXING
+-> BASECALLING + DEMULTIPLEXING:
 Usage: $(basename "$0") -b <input path> -g <gpu memory> -t <number threads>
 
 -> BASECALLING + DEMULTIPLEXING + ASSEMBLY:
