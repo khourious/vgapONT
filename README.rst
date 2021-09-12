@@ -17,15 +17,15 @@ Download and install the pipeline from the github repo:
     chmod 700 -R INSTALL SCRIPTS
     bash INSTALL
 
+
 ===================================
 How to use the vgapWGS pipeline
 ===================================
 
-========
-========
+
+--------
 ILLUMINA
-========
-========
+--------
 
 Only requires the path containing the fastq.gz sequencing data and the primer scheme information at the command line:
 
