@@ -64,4 +64,19 @@ For use, requires the raw path, sample sheet path and VRAM at the command line:
 
 .. code:: bash
 
-   XXX
+    Viral genome assembly pipeline for WGS using ONT
+
+    -> LIST OF AVAILABLE PRIMER SCHEMES IN THIS WORKFLOW:
+    Usage: vgapWGS-ONT -l
+
+    -> BASECALLING + DEMULTIPLEXING
+    Usage: vgapWGS-ONT -b <input path> -g <gpu memory> -t <number threads>
+
+    -> BASECALLING + DEMULTIPLEXING + ASSEMBLY:
+    Usage: vgapWGS-ONT -i <input path> -g <gpu memory> -s <sample sheet> -t <number threads>
+
+    -b  Path containing the fast5 sequencing data (only for basecalling + demultiplexing workflow).
+    -g  VRAM to determine the number of runners per GPU device.
+    -i  Path containing the fast5 sequencing data (only for complete workflow).
+    -s  Path containing the sample sheet in csv (only for complete workflow).
+    -t  Max number of threads (default: all cores).
