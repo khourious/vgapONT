@@ -54,8 +54,6 @@ done
 
 VGAP=$(find "$HOME" -type d -name "vgapWGS")
 
-[ -z "$INPUT" -o -z "$PRIMERSCHEME" ] && usage
-
 if [ -z "$THREADS" ]; then THREADS="$(lscpu | grep 'CPU(s):' | awk '{print $2}' | sed -n '1p')"; fi
 
 LIBRARY_NAME=$(basename "$INPUT")
@@ -65,6 +63,8 @@ REFSEQ=$(echo "$PRIMERSCHEME" | awk -F/ '{print $1}')
 [ ! -d "$VGAP"/LIBRARIES ] && mkdir "$VGAP"/LIBRARIES
 
 [ ! -d "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS ] && mkdir "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY
+
+if [[ -z "$INPUT" ]] || [[ -z "$PRIMERSCHEME" ]]; then usage; else echo "Log Analysis: "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".log.txt"; fi
 
 bg() {
 
