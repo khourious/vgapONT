@@ -64,7 +64,12 @@ REFSEQ=$(echo "$PRIMERSCHEME" | awk -F/ '{print $1}')
 
 [ ! -d "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS ] && mkdir "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY
 
-if [[ -z "$INPUT" ]] || [[ -z "$PRIMERSCHEME" ]]; then usage; else echo "Log Analysis: "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".log.txt"; fi
+if [[ -z "$INPUT" ]] || [[ -z "$PRIMERSCHEME" ]]; then
+    usage
+else
+    echo "" && echo "Output path: "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS"
+    echo "" && echo "Log Analysis: "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".log.txt"
+fi
 
 bg() {
 
@@ -117,12 +122,12 @@ bg() {
    source activate plot
 
    for i in $(find "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY -mindepth 1 -type d | awk -F/ '{print $NF}' | sort -u);do
-       fastcov.py -l "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$i"/"$i".pilon.sorted.mapped.bam -o "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$i"/"$i".coverage.pdf
+       fastcov.py -l "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$i"/"$i".pilon.sorted.mapped.bam -o "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$i"/"$i".coverage_depth.pdf
 done
 
-    gs -dSAFER -r3000 -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -sOUTPUTFILE="$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".depth.pdf "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/*/*.pdf
+    gs -dSAFER -r3000 -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -sOUTPUTFILE="$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".coverage_depth.pdf "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/*/*.pdf
 
-    tar -czf "$VGAP"/LIBRARIES/"$LIBRARY_NAME".tar.gz -P "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/*
+    tar -czf "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS.tar.gz -P "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/*
 
     end=$(date +%s.%N)
 
