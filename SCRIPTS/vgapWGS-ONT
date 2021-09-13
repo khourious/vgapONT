@@ -67,9 +67,19 @@ if [ -z "$THREADS" ]; then THREADS="$(lscpu | grep 'CPU(s):' | awk '{print $2}' 
 
 LIBRARY_NAME=$(basename "$BASECALLDEMUX")
 
-if [[ -z "$BASECALLDEMUX" ]] || [[ -z "$GPUMEM" ]]; then usage; else echo "Log Analysis: "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".log.txt"; fi
+if [[ -z "$BASECALLDEMUX" ]] || [[ -z "$GPUMEM" ]]; then
+    usage
+else
+    echo "" && echo "Output path: "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS"
+    echo "" && echo "Log Analysis: "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".log.txt"
+fi
 
-if [[ -z "$INPUT" ]] || [[ -z "$GPUMEM" ]] || [[ -z "$SAMPLESHEET" ]]; then usage; else echo "Log Analysis: "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".log.txt"; fi
+if [[ -z "$INPUT" ]] || [[ -z "$GPUMEM" ]] || [[ -z "$SAMPLESHEET" ]]; then
+    usage
+else
+    echo "" && echo "Output path: "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS"
+    echo "" && echo "Log Analysis: "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".log.txt"
+fi
 
 bg() {
 
@@ -121,10 +131,10 @@ bg() {
         done
         source activate plot
         for i in $(find "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY -type f -name "*primertrimmed.rg.sorted.bam" | awk -F. '{print $1}' | sort -u);do
-            fastcov.py -l "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$i".primertrimmed.rg.sorted.bam -o "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$i".coverage.pdf
+            fastcov.py -l "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$i".primertrimmed.rg.sorted.bam -o "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$i".coverage_depth.pdf
         done
-        gs -dSAFER -r3000 -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -sOUTPUTFILE="$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".depth.pdf "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/*.pdf
-        tar -czf "$VGAP"/LIBRARIES/"$LIBRARY_NAME".tar.gz -P "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/*
+        gs -dSAFER -r3000 -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -sOUTPUTFILE="$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".coverage_depth.pdf "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/*.pdf
+        tar -czf "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS.tar.gz -P "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/*
     fi
 
     end=$(date +%s.%N)
