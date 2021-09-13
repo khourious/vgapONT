@@ -2,18 +2,27 @@
 
 MYSHELL=$(echo $SHELL | awk -F/ '{print $NF}')
 
-mkdir LIBRARIES RAW -v
+echo 'export PATH=$HOME/vgapWGS/SCRIPTS:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.${MYSHELL}rc
+
+GUPPY_VERSION=5.0.14
 
 if [[ -z "$(which guppy_basecaller)" ]]; then
-    version=5.0.11
     cd
-    curl https://mirror.oxfordnanoportal.com/software/analysis/ont-guppy_"$version"_linux64.tar.gz -o ont-guppy.tar.gz
+    curl https://mirror.oxfordnanoportal.com/software/analysis/ont-guppy_"$GUPPY_VERSION"_linux64.tar.gz -o ont-guppy.tar.gz
     tar -vzxf ont-guppy.tar.gz
     rm -rf ont-guppy.tar.gz
     echo 'export PATH=$HOME/ont-guppy/bin:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.${MYSHELL}rc
     export PATH=$HOME/ont-guppy/bin:/usr/local/share/rsi/idl/bin:$PATH
 else
-    guppy_basecaller --version
+    if [[ "$(guppy_basecaller --version | awk -F" " '{print $NF}' | awk -F+ '{print $1}' | sed -n '1p')" < "$GUPPY_VERSION" ]]; then
+        cd
+        rm -rf ont-guppy
+        curl https://mirror.oxfordnanoportal.com/software/analysis/ont-guppy_"$GUPPY_VERSION"_linux64.tar.gz -o ont-guppy.tar.gz
+        tar -vzxf ont-guppy.tar.gz
+        rm -rf ont-guppy.tar.gz
+    else
+        guppy_basecaller --version
+    fi
 fi
 
 if [[ -z "$(which conda)" ]]; then
@@ -21,11 +30,11 @@ if [[ -z "$(which conda)" ]]; then
     wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
     bash Miniconda3-latest-Linux-x86_64.sh -bfp miniconda3
     rm Miniconda3-latest-Linux-x86_64.sh
-    MYSHELL=$(echo $SHELL | awk -F/ '{print $NF}')
     echo 'export PATH=$HOME/miniconda3/bin:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.${MYSHELL}rc
     export PATH=$HOME/miniconda3/bin:/usr/local/share/rsi/idl/bin:$PATH
     conda install -y -c conda-forge mamba
     mamba update -y -c conda-forge -c anaconda -c bioconda -c defaults -n base conda
+    mamba create -y -n illumina_assembly -c conda-forge -c anaconda -c bioconda -c defaults bwa exonerate fastqc ivar mafft minimap2 multiqc pilon samtools seqkit seqtk trimmomatic
     mamba create -y -n ont_assembly -c conda-forge -c anaconda -c bioconda -c defaults artic exonerate
     mamba create -y -n ont_qc -c conda-forge -c anaconda -c bioconda -c defaults python=3.6 pycoqc
     mamba create -y -n plot -c conda-forge -c anaconda -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
@@ -33,22 +42,26 @@ else
     if [[ -z "$(which mamba)" ]]; then
         conda install -y -c conda-forge mamba
         mamba update -y -c conda-forge -c anaconda -c bioconda -c defaults -n base conda
-        if [[ -z "$(conda env list | grep "ont_assembly|ont_qc|plot")" ]]; then
+        if [[ -z "$(conda env list | grep "illumina_assembly|ont_assembly|ont_qc|plot")" ]]; then
+            mamba create -y -n illumina_assembly -c conda-forge -c anaconda -c bioconda -c defaults bwa exonerate fastqc ivar mafft minimap2 multiqc pilon samtools seqkit seqtk trimmomatic
             mamba create -y -n ont_assembly -c conda-forge -c anaconda -c bioconda -c defaults artic exonerate
             mamba create -y -n ont_qc -c conda-forge -c anaconda -c bioconda -c defaults python=3.6 pycoqc
             mamba create -y -n plot -c conda-forge -c anaconda -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
         else
+            mamba update -y -n illumina_assembly -c conda-forge -c anaconda -c bioconda -c defaults --all
             mamba update -y -n ont_assembly -c conda-forge -c anaconda -c bioconda -c defaults --all
             mamba update -y -n ont_qc -c conda-forge -c anaconda -c bioconda -c defaults --all
             mamba update -y -n plot -c conda-forge -c anaconda -c bioconda -c defaults --all
         fi
     else
         mamba update -y -c conda-forge -c anaconda -c bioconda -c defaults -n base conda
-        if [[ -z "$(conda env list | grep "ont_assembly|ont_qc|plot")" ]]; then
+        if [[ -z "$(conda env list | grep "illumina_assembly|ont_assembly|ont_qc|plot")" ]]; then
+            mamba create -y -n illumina_assembly -c conda-forge -c anaconda -c bioconda -c defaults bwa exonerate fastqc ivar mafft minimap2 multiqc pilon samtools seqkit seqtk trimmomatic
             mamba create -y -n ont_assembly -c conda-forge -c anaconda -c bioconda -c defaults artic exonerate
             mamba create -y -n ont_qc -c conda-forge -c anaconda -c bioconda -c defaults python=3.6 pycoqc
             mamba create -y -n plot -c conda-forge -c anaconda -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
         else
+            mamba update -y -n illumina_assembly -c conda-forge -c anaconda -c bioconda -c defaults --all
             mamba update -y -n ont_assembly -c conda-forge -c anaconda -c bioconda -c defaults --all
             mamba update -y -n ont_qc -c conda-forge -c anaconda -c bioconda -c defaults --all
             mamba update -y -n plot -c conda-forge -c anaconda -c bioconda -c defaults --all
@@ -65,15 +78,4 @@ if [[ -z "$(which fastcov.py)" ]]; then
 else
     source activate plot
     fastcov.py --help
-fi
-
-if [[ ! -d $HOME/bin ]]; then
-    mkdir -vp $HOME/bin
-    if [[ -z "$(which MINION)" ]]; then
-        ln -s $(echo $PWD/SCRIPTS/vgapWGS) $HOME/bin
-    fi
-else
-    if [[ -z "$(which MINION)" ]]; then
-        ln -s $(echo $PWD/SCRIPTS/vgapWGS) $HOME/bin
-    fi
 fi
