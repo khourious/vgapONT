@@ -35,7 +35,7 @@ if [[ -z "$(which conda)" ]]; then
     conda install -y -c conda-forge mamba
     mamba update -y -c conda-forge -c anaconda -c bioconda -c defaults -n base conda
     mamba create -y -n illumina_assembly -c conda-forge -c anaconda -c bioconda -c defaults bwa exonerate fastqc ivar mafft minimap2 multiqc pilon samtools seqkit seqtk trimmomatic
-    mamba create -y -n ont_assembly -c conda-forge -c anaconda -c bioconda -c defaults artic exonerate
+    mamba create -y -n ont_assembly -c conda-forge -c anaconda -c bioconda -c defaults artic exonerate seqtk
     mamba create -y -n ont_qc -c conda-forge -c anaconda -c bioconda -c defaults python=3.6 pycoqc
     mamba create -y -n plot -c conda-forge -c anaconda -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
 else
@@ -44,7 +44,7 @@ else
         mamba update -y -c conda-forge -c anaconda -c bioconda -c defaults -n base conda
         if [[ -z "$(conda env list | grep "illumina_assembly|ont_assembly|ont_qc|plot")" ]]; then
             mamba create -y -n illumina_assembly -c conda-forge -c anaconda -c bioconda -c defaults bwa exonerate fastqc ivar mafft minimap2 multiqc pilon samtools seqkit seqtk trimmomatic
-            mamba create -y -n ont_assembly -c conda-forge -c anaconda -c bioconda -c defaults artic exonerate
+            mamba create -y -n ont_assembly -c conda-forge -c anaconda -c bioconda -c defaults artic exonerate seqtk
             mamba create -y -n ont_qc -c conda-forge -c anaconda -c bioconda -c defaults python=3.6 pycoqc
             mamba create -y -n plot -c conda-forge -c anaconda -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
         else
@@ -57,7 +57,7 @@ else
         mamba update -y -c conda-forge -c anaconda -c bioconda -c defaults -n base conda
         if [[ -z "$(conda env list | grep "illumina_assembly|ont_assembly|ont_qc|plot")" ]]; then
             mamba create -y -n illumina_assembly -c conda-forge -c anaconda -c bioconda -c defaults bwa exonerate fastqc ivar mafft minimap2 multiqc pilon samtools seqkit seqtk trimmomatic
-            mamba create -y -n ont_assembly -c conda-forge -c anaconda -c bioconda -c defaults artic exonerate
+            mamba create -y -n ont_assembly -c conda-forge -c anaconda -c bioconda -c defaults artic exonerate seqtk
             mamba create -y -n ont_qc -c conda-forge -c anaconda -c bioconda -c defaults python=3.6 pycoqc
             mamba create -y -n plot -c conda-forge -c anaconda -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
         else
