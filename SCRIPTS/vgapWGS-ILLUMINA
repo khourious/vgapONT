@@ -56,17 +56,13 @@ VGAP=$(find "$HOME" -type d -name "vgapWGS")
 
 if [ -z "$THREADS" ]; then THREADS="$(lscpu | grep 'CPU(s):' | awk '{print $2}' | sed -n '1p')"; fi
 
-LIBRARY_NAME=$(basename "$INPUT")
-
-REFSEQ=$(echo "$PRIMERSCHEME" | awk -F/ '{print $1}')
-
-[ ! -d "$VGAP"/LIBRARIES ] && mkdir "$VGAP"/LIBRARIES
-
-[ ! -d "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS ] && mkdir "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY
-
 if [[ -z "$INPUT" ]] || [[ -z "$PRIMERSCHEME" ]]; then
     usage
 else
+    LIBRARY_NAME=$(basename "$INPUT")
+    REFSEQ=$(echo "$PRIMERSCHEME" | awk -F/ '{print $1}')
+    [ ! -d "$VGAP"/LIBRARIES ] && mkdir "$VGAP"/LIBRARIES
+    [ ! -d "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS ] && mkdir "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY
     echo "" && echo "Output path: "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS"
     echo "" && echo "Log Analysis: "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".log.txt"
 fi
@@ -93,7 +89,7 @@ bg() {
         fastqc -t "$THREADS" "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$i"/*_paired*
     done
 
-    multiqc -s -ip --no-data-dir -n "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".qc "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/*
+    multiqc -s -ip --no-data-dir -i "$LIBRARY_NAME" -n "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".qc "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/*
 
     echo "SampleId#NumberTotalReads#NumberReadsMapped#AverageDepth#Coverage10x#Coverage20x#Coverage100x#Coverage1000x#NCount" | tr '#' '\t' > "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".stats.txt
 
