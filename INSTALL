@@ -2,7 +2,7 @@
 
 MYSHELL=$(echo $SHELL | awk -F/ '{print $NF}')
 
-echo 'export PATH=$HOME/vgapWGS/SCRIPTS:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.${MYSHELL}rc
+echo 'export PATH=$HOME/vgap/SCRIPTS:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.${MYSHELL}rc
 
 GUPPY_VERSION=5.0.14
 
