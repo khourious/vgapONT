@@ -52,7 +52,7 @@ while getopts "hi:lp:t:" OPT; do
     esac
 done
 
-VGAP=$(find "$HOME" -type d -name "vgapWGS")
+VGAP=$(find "$HOME" -type d -name "vgap")
 
 if [ -z "$THREADS" ]; then THREADS="$(lscpu | grep 'CPU(s):' | awk '{print $2}' | sed -n '1p')"; fi
 
