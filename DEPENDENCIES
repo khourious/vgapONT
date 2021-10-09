@@ -2,7 +2,9 @@
 
 MYSHELL=$(echo $SHELL | awk -F/ '{print $NF}')
 
-echo 'export PATH=$HOME/vgap/SCRIPTS:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.${MYSHELL}rc
+if [[ -z "$(which vgap-ILLUMINA)" ]]; then
+    echo 'export PATH=$HOME/vgap/SCRIPTS:/usr/local/share/rsi/idl/bin:$PATH' >> $HOME/.${MYSHELL}rc
+fi
 
 GUPPY_VERSION=5.0.14
 
@@ -77,5 +79,5 @@ if [[ -z "$(which fastcov.py)" ]]; then
     export PATH=$HOME/fastcov:/usr/local/share/rsi/idl/bin:$PATH
 else
     source activate plot
-    fastcov.py --help
+    fastcov.py -h
 fi
