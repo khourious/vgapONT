@@ -77,7 +77,6 @@ bg() {
     done
 
     for i in $(find "$INPUT" -type f -name "*R2*fastq.gz" | sort -u); do
-        mkdir "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$(echo "$i" | awk -F/ '{print $NF}' | awk -F"-|_" '{print $1}')"
         cp "$i" "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$(echo "$i" | awk -F/ '{print $NF}' | awk -F"-|_" '{print $1}')"/"$(echo "$i" | awk -F/ '{print $NF}' | awk -F"-|_" '{print $1}')"_R2.fq.gz -v
     done
 
