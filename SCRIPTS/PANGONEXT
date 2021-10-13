@@ -1,0 +1,32 @@
+#!/bin/bash
+
+INPUT="$1"
+
+OUTPUT="$(basename ${INPUT%.*})"
+
+bg() {
+
+    THREADS="$(lscpu | grep 'CPU(s):' | awk '{print $2}' | sed -n '1p')"
+
+    pangolin --update
+
+    source activate pangolin
+
+    pangolin "$INPUT" -t "$THREADS" --outfile "$OUTPUT"_pangolin_"$(date +'%Y-%m-%d')".csv
+
+    mamba update -y -n nextclade -c conda-forge -c anaconda -c bioconda -c defaults --all
+
+    source activate nextclade
+
+    nextclade -i "$INPUT" -j "$THREADS" -c "$OUTPUT"_nextclade_"$(date +'%Y-%m-%d')".csv
+
+    echo "SampleId#PangoLineage#Clade#Substitutions#Deletions#Insertions#Missing#aaSubstitutions#aaDeletions" | \
+        tr '#' '\t' > "$OUTPUT"_pangonext_"$(date +'%Y-%m-%d')".txt
+
+    paste <(cat "$OUTPUT"_pangolin_"$(date +'%Y-%m-%d')".csv | sed '1d' | sort | awk -F, '{print $1"\t"$2}') \
+        <(cat "$OUTPUT"_nextclade_"$(date +'%Y-%m-%d')".csv | sed '1d' | sort | \
+        awk -F";" '{print $2"\t"$11"\t"$12"\t"$13"\t"$14"\t"$17"\t"$19}') >> "$OUTPUT"_pangonext_"$(date +'%Y-%m-%d')".txt
+
+}
+
+bg "$1" &>>"$OUTPUT"_log_pangonext_"$(date +'%Y-%m-%d')".txt &
