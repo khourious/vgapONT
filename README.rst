@@ -4,7 +4,7 @@ Viral genome assembly pipeline for WGS using Oxford Nanopore Technologies (ONT)
 
 This repository contains scripts and files to run the bioinformatic analysis of whole genome sequencing of viruses.
 
-Until now, this workflow was developed and tested for working with CHIKV and ZIKV <ZIBRAproject> and SARS-CoV-2 <ARTICnetwork> <FIOCRUZ-IOC> primer schemes. **Tests with other primer schemes should be performed.**
+Until now, this workflow was developed and tested for working with CHIKV and ZIKV ´´ZIBRAproject´´ and SARS-CoV-2 ´´ARTICnetwork´´ ´´FIOCRUZ-IOC´´ primer schemes. **Tests with other primer schemes should be performed.**
 
 -----------------------
 Setting up the pipeline
@@ -19,27 +19,27 @@ Download and install the pipeline from the github repo:
     bash DEPENDENCIES
 
 -------------------------------
-How to use the vgapWGS pipeline
+How to use the vgapONT pipeline
 -------------------------------
 
 It is necessary to create the sample sheet (.csv). You can create in ``SAMPLE_SHEETS`` directory.
 
 The csv file name **corresponds to the library name** and contains: sample,barcode,primer scheme -- **NO HEADER!!**
 
-.. code:: bash
+.. code-block:: text
 
     sample01,BC01,nCoV-2019/V3
     sample02,BC02,nCoV-2019/V3
 
 You can combine pool A and B if they are on 2 different barcodes:
 
-.. code:: bash
+.. code-block:: text
 
     sample03,BC03-BC04,nCoV-2019/V3
 
 For use, requires the raw path, sample sheet path and VRAM at the command line:
 
-.. code:: bash
+.. code-block:: text
 
     Viral genome assembly pipeline for WGS using Oxford Nanopore Technologies (ONT)
 
