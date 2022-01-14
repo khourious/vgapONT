@@ -5,13 +5,13 @@ echo "
 Viral genome assembly pipeline for WGS using Oxford Nanopore Technologies (ONT)
 
 -> LIST OF AVAILABLE PRIMER SCHEMES IN THIS WORKFLOW:
-Usage: "$(basename "$0")" -l
+Usage: $(basename "$0") -l
 
 -> BASECALLING + DEMULTIPLEXING:
-Usage: "$(basename "$0")" -b <input path> -g <gpu memory> -t <number threads>
+Usage: $(basename "$0") -b <input path> -g <gpu memory> -t <number threads>
 
 -> BASECALLING + DEMULTIPLEXING + ASSEMBLY:
-Usage: "$(basename "$0")" -i <input path> -g <gpu memory> -s <sample sheet> -t <number threads>
+Usage: $(basename "$0") -i <input path> -g <gpu memory> -s <sample sheet> -t <number threads>
 
 -b  Path containing the fast5 sequencing data (only for basecalling + demultiplexing workflow).
 -g  VRAM to determine the number of runners per GPU device.
@@ -47,9 +47,8 @@ ZikaAsian/V1
 exit -1
 }
 
-while getopts "hb:g:i:ls:t:" OPT; do
+while getopts "b:g:i:ls:t:" OPT; do
     case "$OPT" in
-        h) usage;;
         b) BASECALLDEMUX="$OPTARG";;
         g) GPUMEM="$OPTARG";;
         i) INPUT="$OPTARG";;
@@ -61,46 +60,49 @@ done
 
 VGAP="$HOME"/vgapONT
 
-if [ -z "$THREADS" ]; then THREADS="$(lscpu | grep 'CPU(s):' | awk '{print $2}' | sed -n '1p')"; fi
+if [ -z "$THREADS" ]; then THREADS=$(lscpu | grep 'CPU(s):' | awk '{print $2}' | sed -n '1p' | awk '{print $1-2}'); fi
+THREADS="$(lscpu | grep 'CPU(s):' | awk '{print $2}' | sed -n '1p')"; fi
 
 if [[ -z "$INPUT" ]] || [[ -z "$GPUMEM" ]] || [[ -z "$SAMPLESHEET" ]]; then
     if [[ -z "$BASECALLDEMUX" ]] || [[ -z "$GPUMEM" ]]; then
         usage
     else
-        LIBRARY_NAME="$(basename "$BASECALLDEMUX")"
+        LIBRARY_NAME=$(basename "$BASECALLDEMUX")
         [ ! -d "$VGAP"/LIBRARIES ] && mkdir "$VGAP"/LIBRARIES
-        [ ! -d "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS ] && \
-            mkdir "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY
+        [ ! -d "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS ] && mkdir "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS \
+            "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY
         echo "" && echo "Output path: "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS"
-        echo "" && echo "Log Analysis: "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".log."$(date +%s.%N)".txt"
+        echo "" && echo "Log Analysis: "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".log.$(date +%s.%N).txt"
     fi
 else
-    LIBRARY_NAME="$(basename "$INPUT")"
+    LIBRARY_NAME=$(basename "$INPUT")
     [ ! -d "$VGAP"/LIBRARIES ] && mkdir "$VGAP"/LIBRARIES
-    [ ! -d "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS ] && \
-        mkdir "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY \
-        "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY
+    [ ! -d "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS ] && mkdir "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS \
+        "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY
     echo "" && echo "Output path: "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS"
-    echo "" && echo "Log Analysis: "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".log."$(date +%s.%N)".txt"
+    echo "" && echo "Log Analysis: "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".log.$(date +%s.%N).txt"
 fi
 
 bg() {
 
-    start="$(date +%s.%N)"
+    start=$(date +%s.%N)
 
-if [[ -z "$INPUT" ]] || [[ -z "$GPUMEM" ]] || [[ -z "$SAMPLESHEET" ]]; then
-    if [[ -z "$BASECALLDEMUX" ]] || [[ -z "$GPUMEM" ]]; then
+    if [[ -z "$INPUT" ]] || [[ -z "$GPUMEM" ]] || [[ -z "$SAMPLESHEET" ]]; then
+        if [[ -z "$BASECALLDEMUX" ]] || [[ -z "$GPUMEM" ]]; then
             usage
         else
-            guppy_basecaller -r -x auto --verbose_logs --disable_pings -c dna_r9.4.1_450bps_hac.cfg -i "$BASECALLDEMUX" \
-                -s "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/BASECALL --gpu_runners_per_device "$GPUMEM" --chunks_per_runner 800 \
-                --chunk_size 2000 --num_callers "$THREADS" --min_qscore 7
+            guppy_basecaller -r -x auto --verbose_logs --disable_pings -c dna_r9.4.1_450bps_hac.cfg \
+                -i "$BASECALLDEMUX" -s "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/BASECALL \
+                --gpu_runners_per_device "$GPUMEM" --chunks_per_runner 800 --chunk_size 2000 \
+                --num_callers "$THREADS" --min_qscore 7 --compress_fastq
             guppy_barcoder -r --require_barcodes_both_ends --trim_barcodes -t "$THREADS" -x auto \
-                -i "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/BASECALL -s "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/DEMUX
-            source activate ont_qc
+                -i "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/BASECALL \
+                -s "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/DEMUX
+            source activate vgap_qc
             pycoQC -q -f "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/BASECALL/sequencing_summary.txt \
                 -b "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/DEMUX/barcoding_summary.txt \
-                -o "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".qc.html --report_title "$LIBRARY_NAME"
+                -o "$VGAP"/LIBRARIES/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".qc.html \
+                --report_title "$LIBRARY_NAME"
         fi
     else
         PRIMERSCHEME="$(cat "$SAMPLESHEET" | awk -F, '{print $3}' | uniq)"
