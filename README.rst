@@ -15,8 +15,8 @@ Download and install the pipeline from the github repo:
 .. code:: bash
 
     git clone --recursive https://github.com/khourious/vgapONT.git; cd vgapONT
-    chmod 700 -R DEPENDENCIES SCRIPTS
-    bash DEPENDENCIES
+    chmod 700 -R INSTALL
+    bash INSTALL
 
 -------------------------------
 How to use the vgapONT pipeline
