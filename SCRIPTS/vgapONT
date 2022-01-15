@@ -4,6 +4,9 @@ usage () {
 echo "
 Viral genome assembly pipeline for WGS using Oxford Nanopore Technologies (ONT)
 
+-> UPDATE CONDA DEPENDENCIES:
+Usage: $(basename "$0") -u
+
 -> LIST OF AVAILABLE PRIMER SCHEMES IN THIS WORKFLOW:
 Usage: $(basename "$0") -l
 
@@ -19,6 +22,7 @@ Usage: $(basename "$0") -i <input path> -g <gpu memory> -p <primer scheme> -s <s
 -p  Primer scheme panel user for generate amplicons.
 -s  Path containing the sample sheet in csv.
 -t  Max number of threads (default: all cores minus 2).
+-u  Update conda dependencies.
 "
 exit -1
 }
@@ -49,7 +53,16 @@ ZikaAsian/V1
 exit -1
 }
 
-while getopts "b:g:i:lp:s:t:" OPT; do
+update () {
+
+    mamba update -y -n base -c conda-forge -c anaconda -c bioconda -c defaults conda
+    mamba update -y -n vgap_assembly -c conda-forge -c anaconda -c bioconda -c defaults --all
+    mamba update -y -n vgap_plot -c conda-forge -c anaconda -c bioconda -c defaults --all
+
+exit -1
+}
+
+while getopts "b:g:i:lp:s:t:u" OPT; do
     case "$OPT" in
         b) BASECALLDEMUX="$OPTARG";;
         g) GPUMEM="$OPTARG";;
@@ -58,6 +71,7 @@ while getopts "b:g:i:lp:s:t:" OPT; do
         p) PRIMERSCHEME="$OPTARG";;
         s) SAMPLESHEET="$OPTARG";;
         t) THREADS="$OPTARG";;
+        u) update;;
     esac
 done
 
