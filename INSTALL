@@ -36,14 +36,14 @@ if [[ -z $(which conda) ]]; then
     export PATH=$HOME/miniconda3/bin:/usr/local/share/rsi/idl/bin:$PATH
     conda install -y -c conda-forge mamba
     mamba update -y -c conda-forge -c anaconda -c bioconda -c defaults -n base conda
-    mamba create -y -n vgap_assembly -c conda-forge -c anaconda -c bioconda -c defaults artic exonerate seqtk
+    mamba create -y -n vgap_assembly -c conda-forge -c anaconda -c bioconda -c defaults artic exonerate medaka mafft seqkit seqtk
     mamba create -y -n vgap_qc -c conda-forge -c anaconda -c bioconda -c defaults python=3.6 pycoqc
     mamba create -y -n vgap_plot -c conda-forge -c anaconda -c bioconda -c defaults ghostscript numpy pandas pysam seaborn
 elif [[ -z $(which mamba) ]]; then
     conda install -y -c conda-forge mamba
     mamba update -y -c conda-forge -c anaconda -c bioconda -c defaults -n base conda
     if [[ -z $(conda env list | grep vgap_assembly) ]]; then
-        mamba create -y -n vgap_assembly -c conda-forge -c anaconda -c bioconda -c defaults artic exonerate seqtk
+        mamba create -y -n vgap_assembly -c conda-forge -c anaconda -c bioconda -c defaults artic exonerate medaka mafft seqkit seqtk
     fi
     if [[ -z $(conda env list | grep vgap_qc) ]]; then
         mamba create -y -n vgap_qc -c conda-forge -c anaconda -c bioconda -c defaults python=3.6 pycoqc
@@ -53,7 +53,7 @@ elif [[ -z $(which mamba) ]]; then
     fi
 elif [[ ! -z $(which mamba) ]]; then
     if [[ -z $(conda env list | grep vgap_assembly) ]]; then
-        mamba create -y -n vgap_assembly -c conda-forge -c anaconda -c bioconda -c defaults artic exonerate seqtk
+        mamba create -y -n vgap_assembly -c conda-forge -c anaconda -c bioconda -c defaults artic exonerate medaka mafft seqkit seqtk
     fi
     if [[ -z $(conda env list | grep vgap_qc) ]]; then
         mamba create -y -n vgap_qc -c conda-forge -c anaconda -c bioconda -c defaults python=3.6 pycoqc
