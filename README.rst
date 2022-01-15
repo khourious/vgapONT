@@ -4,7 +4,7 @@ Viral genome assembly pipeline for WGS using Oxford Nanopore Technologies (ONT)
 
 This repository contains scripts and files to run the bioinformatic analysis of whole genome sequencing of viruses.
 
-Until now, this workflow was developed and tested for working with CHIKV and ZIKV ´´ZIBRAproject´´ and SARS-CoV-2 ´´ARTICnetwork´´ ´´FIOCRUZ-IOC´´ primer schemes. **Tests with other primer schemes should be performed.**
+Until now, this workflow was developed and tested for working with CHIKV and ZIKV ``ZIBRAproject`` and SARS-CoV-2 ``ARTICnetwork`` and ``FIOCRUZ-IOC`` primer schemes. **Tests with other primer schemes should be performed.**
 
 .. code-block:: text
 
@@ -17,14 +17,14 @@ Until now, this workflow was developed and tested for working with CHIKV and ZIK
     Usage: vgapONT -b <input path> -g <gpu memory> -t <number threads>
 
     -> BASECALLING + DEMULTIPLEXING + ASSEMBLY:
-    Usage: vgapONT -i <input path> -g <gpu memory> -s <sample sheet> -t <number threads>
+    Usage: vgapONT -i <input path> -g <gpu memory> -p <primer scheme> -s <sample sheet> -t <number threads>
 
     -b  Path containing the fast5 sequencing data (only for basecalling + demultiplexing workflow).
     -g  VRAM to determine the number of runners per GPU device.
-    -i  Path containing the fast5 sequencing data (only for complete workflow).
-    -p  Primer scheme panel user for generate amplicons (only for complete workflow).
-    -s  Path containing the sample sheet in csv (only for complete workflow).
-    -t  Max number of threads (default: all cores).
+    -i  Path containing the fast5 sequencing data.
+    -p  Primer scheme panel user for generate amplicons.
+    -s  Path containing the sample sheet in csv.
+    -t  Max number of threads (default: all cores minus 2).
 
 -----------------------
 Setting up the pipeline
@@ -38,9 +38,9 @@ Download and install the pipeline from the github repo:
     chmod 700 -R INSTALL
     bash INSTALL
 
-------------------------------------------------------------------------------------
-How to use the vgapONT pipeline - **ONLY FOR BASECALLING + DEMULTIPLEXING WORKFLOW**
-------------------------------------------------------------------------------------
+------------------------------------------------------------
+How to use the vgapONT THE BASECALLING + DEMULTIPLEXING WORKFLOW
+------------------------------------------------------------
 
 * For use, requires:
     * Path containing the fast5 sequencing data
@@ -51,9 +51,9 @@ How to use the vgapONT pipeline - **ONLY FOR BASECALLING + DEMULTIPLEXING WORKFL
 
     vgapONT -b /home/user/vgapONT/RAW/LIBRARRY_NAME -g 6 -t 12
 
------------------------------------------------------------
-How to use the vgapONT pipeline - **THE COMPLETE WORKFLOW**
------------------------------------------------------------
+--------------------------------------------
+How to use the vgapONT THE COMPLETE WORKFLOW
+--------------------------------------------
 
 It is necessary to create the sample sheet (.csv). You can create in ``SAMPLE_SHEETS`` directory.
 
