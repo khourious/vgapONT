@@ -38,9 +38,9 @@ Download and install the pipeline from the github repo:
     chmod 700 -R INSTALL
     bash INSTALL
 
-------------------------------------------------------------
-How to use the vgapONT THE BASECALLING + DEMULTIPLEXING WORKFLOW
-------------------------------------------------------------
+----------------------------------------------------
+How to use the basecalling + demultiplexing workflow
+----------------------------------------------------
 
 * For use, requires:
     * Path containing the fast5 sequencing data
@@ -51,9 +51,9 @@ How to use the vgapONT THE BASECALLING + DEMULTIPLEXING WORKFLOW
 
     vgapONT -b /home/user/vgapONT/RAW/LIBRARRY_NAME -g 6 -t 12
 
---------------------------------------------
-How to use the vgapONT THE COMPLETE WORKFLOW
---------------------------------------------
+--------------------------------
+How to use the complete workflow
+--------------------------------
 
 It is necessary to create the sample sheet (.csv). You can create in ``SAMPLE_SHEETS`` directory.
 
