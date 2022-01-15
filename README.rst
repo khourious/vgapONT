@@ -6,39 +6,6 @@ This repository contains scripts and files to run the bioinformatic analysis of 
 
 Until now, this workflow was developed and tested for working with CHIKV and ZIKV ´´ZIBRAproject´´ and SARS-CoV-2 ´´ARTICnetwork´´ ´´FIOCRUZ-IOC´´ primer schemes. **Tests with other primer schemes should be performed.**
 
------------------------
-Setting up the pipeline
------------------------
-
-Download and install the pipeline from the github repo:
-
-.. code:: bash
-
-    git clone --recursive https://github.com/khourious/vgapONT.git; cd vgapONT
-    chmod 700 -R INSTALL
-    bash INSTALL
-
--------------------------------
-How to use the vgapONT pipeline
--------------------------------
-
-It is necessary to create the sample sheet (.csv). You can create in ``SAMPLE_SHEETS`` directory.
-
-The csv file name **corresponds to the library name** and contains: sample,barcode,primer scheme -- **NO HEADER!!**
-
-.. code-block:: text
-
-    sample01,BC01,nCoV-2019/V3
-    sample02,BC02,nCoV-2019/V3
-
-You can combine pool A and B if they are on 2 different barcodes:
-
-.. code-block:: text
-
-    sample03,BC03-BC04,nCoV-2019/V3
-
-For use, requires the raw path, sample sheet path and VRAM at the command line:
-
 .. code-block:: text
 
     Viral genome assembly pipeline for WGS using Oxford Nanopore Technologies (ONT)
@@ -55,5 +22,61 @@ For use, requires the raw path, sample sheet path and VRAM at the command line:
     -b  Path containing the fast5 sequencing data (only for basecalling + demultiplexing workflow).
     -g  VRAM to determine the number of runners per GPU device.
     -i  Path containing the fast5 sequencing data (only for complete workflow).
+    -p  Primer scheme panel user for generate amplicons (only for complete workflow).
     -s  Path containing the sample sheet in csv (only for complete workflow).
     -t  Max number of threads (default: all cores).
+
+-----------------------
+Setting up the pipeline
+-----------------------
+
+Download and install the pipeline from the github repo:
+
+.. code:: bash
+
+    git clone --recursive https://github.com/khourious/vgapONT.git; cd vgapONT
+    chmod 700 -R INSTALL
+    bash INSTALL
+
+------------------------------------------------------------------------------------
+How to use the vgapONT pipeline - **ONLY FOR BASECALLING + DEMULTIPLEXING WORKFLOW**
+------------------------------------------------------------------------------------
+
+* For use, requires:
+    * Path containing the fast5 sequencing data
+    * VRAM to determine the number of runners per GPU device
+    * Max number of threads
+
+.. code:: bash
+
+    vgapONT -b /home/user/vgapONT/RAW/LIBRARRY_NAME -g 6 -t 12
+
+-----------------------------------------------------------
+How to use the vgapONT pipeline - **THE COMPLETE WORKFLOW**
+-----------------------------------------------------------
+
+It is necessary to create the sample sheet (.csv). You can create in ``SAMPLE_SHEETS`` directory.
+
+The csv file name **corresponds to the library name** and contains: sample,barcode -- **NO HEADER!!**
+
+.. code-block:: text
+
+    sample01,BC01
+    sample02,BC02
+
+You can combine pool A and B if they are on 2 different barcodes:
+
+.. code-block:: text
+
+    sample03,BC03-BC04
+
+* For use, requires:
+    * Path containing the fast5 sequencing data
+    * Path containing the sample sheet in csv
+    * Primer scheme panel user for generate amplicon
+    * VRAM to determine the number of runners per GPU device
+    * Max number of threads
+
+.. code:: bash
+
+    vgapONT -i /home/user/vgapONT/RAW/LIBRARRY_NAME -s /home/user/vgapONT/SAMPLE_SHEETS/LIBRARY_NAME.csv -p SARS-CoV-2_ARTIC/V4.1 -g 6 -t 12
