@@ -10,6 +10,9 @@ Until now, this workflow was developed and tested for working with CHIKV and ZIK
 
     Viral genome assembly pipeline for WGS using Oxford Nanopore Technologies (ONT)
 
+    -> UPDATE CONDA DEPENDENCIES:
+    Usage: vgapONT -u
+
     -> LIST OF AVAILABLE PRIMER SCHEMES IN THIS WORKFLOW:
     Usage: vgapONT -l
 
@@ -25,6 +28,7 @@ Until now, this workflow was developed and tested for working with CHIKV and ZIK
     -p  Primer scheme panel user for generate amplicons.
     -s  Path containing the sample sheet in csv.
     -t  Max number of threads (default: all cores minus 2).
+    -u  Update conda dependencies.
 
 -----------------------
 Setting up the pipeline
