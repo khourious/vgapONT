@@ -36,14 +36,18 @@ Updated Jan 14 2022
 -> CHIKV Asian/ECSA <ZIBRA Project> (https://github.com/zibraproject/zika-pipeline)
 ChikAsianECSA/V1
 
--> SARS-CoV-2 <ARTICnetwork> (https://github.com/artic-network/artic-ncov2019)
+-> SARS-CoV-2 400pb amplicon <ARTICnetwork> (https://github.com/artic-network/artic-ncov2019)
 SARS-CoV-2_ARTIC/V1
 SARS-CoV-2_ARTIC/V2
 SARS-CoV-2_ARTIC/V3
 SARS-CoV-2_ARTIC/V4
 SARS-CoV-2_ARTIC/V4.1
 
--> SARS-CoV-2 <FIOCRUZ-IOC> (https://doi.org/10.1101/2020.04.30.069039)
+-> SARS-CoV-2 1,200pb amplicon <MIDNIGHT> (https://doi.org/10.1093/biomethods/bpaa014)
+SARS-CoV-2_MIDNIGHT/V1
+SARS-CoV-2_MIDNIGHT/V2
+
+-> SARS-CoV-2 2,000pb amplicon <FIOCRUZ-IOC> (https://doi.org/10.1101/2020.04.30.069039)
 SARS-CoV-2_FIOCRUZ-IOC/V1
 SARS-CoV-2_FIOCRUZ-IOC/V2
 
@@ -107,7 +111,7 @@ bg() {
         if [[ -z "$BASECALLDEMUX" ]] || [[ -z "$GPUMEM" ]]; then
             usage
         else
-            guppy_basecaller -r -x auto --verbose_logs --disable_pings -c dna_r9.4.1_450bps_hac.cfg -i "$BASECALLDEMUX" -s "$VGAP"/ANALYSIS/"$LIBRARY_NAME"_ANALYSIS/BASECALL --gpu_runners_per_device "$GPUMEM" --chunks_per_runner 800 --chunk_size 2000 --num_callers "$THREADS" --min_qscore 7 --compress_fastq
+            guppy_basecaller -r -x auto --verbose_logs --disable_pings -c dna_r9.4.1_450bps_hac.cfg -i "$BASECALLDEMUX" -s "$VGAP"/ANALYSIS/"$LIBRARY_NAME"_ANALYSIS/BASECALL --gpu_runners_per_device "$GPUMEM" --chunks_per_runner 800 --chunk_size 2000 --num_callers "$THREADS" --min_qscore 7 # --compress_fastq
             guppy_barcoder -r --require_barcodes_both_ends --trim_barcodes -t "$THREADS" -x auto -i "$VGAP"/ANALYSIS/"$LIBRARY_NAME"_ANALYSIS/BASECALL/pass -s "$VGAP"/ANALYSIS/"$LIBRARY_NAME"_ANALYSIS/DEMUX
             for i in $(find "$VGAP"/ANALYSIS/"$LIBRARY_NAME"_ANALYSIS/DEMUX -type d -name "barcode*" | sort); do
                 cat "$i"/*.fastq > "$VGAP"/ANALYSIS/"$LIBRARY_NAME"_ANALYSIS/CAT/$(echo "$i" | awk -F/ '{print $NF}').fastq
@@ -119,7 +123,7 @@ bg() {
         REFSEQID=$(echo "$PRIMERSCHEME" | awk -F/ '{print $1}')
         MIN=$(paste <(awk -F"\t" '$4~/RIGHT|R|REVERSE|REV|RV|R/ {print $2}' "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) <(awk -F"\t" '$4~/LEFT|L|FORWARD|FWD|FW|F/ {print $3}' "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) | awk -F"\t" '{print $1-$2}' | awk '{if ($0>0) print $0}' | sort -n | sed -n '1p')
         MAX=$(paste <(awk -F"\t" '$4~/RIGHT|R|REVERSE|REV|RV|R/ {print $2}' "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) <(awk -F"\t" '$4~/LEFT|L|FORWARD|FWD|FW|F/ {print $3}' "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) | awk -F"\t" '{print $1-$2}' | awk '{if ($0>0) print $0+200}' | sort -nr | sed -n '1p')
-        guppy_basecaller -r -x auto --verbose_logs --disable_pings -c dna_r9.4.1_450bps_hac.cfg -i "$BASECALL" -s "$VGAP"/ANALYSIS/"$LIBRARY_NAME"_ANALYSIS/BASECALL --gpu_runners_per_device "$GPUMEM" --chunks_per_runner 800 --chunk_size 2000 --num_callers "$THREADS" --min_qscore 7 --compress_fastq
+        guppy_basecaller -r -x auto --verbose_logs --disable_pings -c dna_r9.4.1_450bps_hac.cfg -i "$BASECALL" -s "$VGAP"/ANALYSIS/"$LIBRARY_NAME"_ANALYSIS/BASECALL --gpu_runners_per_device "$GPUMEM" --chunks_per_runner 800 --chunk_size 2000 --num_callers "$THREADS" --min_qscore 7 # --compress_fastq
         guppy_barcoder -r --require_barcodes_both_ends --trim_barcodes -t "$THREADS" -x auto -i "$VGAP"/ANALYSIS/"$LIBRARY_NAME"_ANALYSIS/BASECALL/pass -s "$VGAP"/ANALYSIS/"$LIBRARY_NAME"_ANALYSIS/DEMUX
         source activate vgap_qc
         pycoQC -q -f "$VGAP"/ANALYSIS/"$LIBRARY_NAME"_ANALYSIS/BASECALL/sequencing_summary.txt -b "$VGAP"/ANALYSIS/"$LIBRARY_NAME"_ANALYSIS/DEMUX/barcoding_summary.txt -o "$VGAP"/ANALYSIS/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".qc.$(uname -n).$(date +'%Y-%m-%d').html --report_title "$LIBRARY_NAME"
