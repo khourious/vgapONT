@@ -4,7 +4,7 @@ Viral genome assembly pipeline for WGS using Oxford Nanopore Technologies (ONT)
 
 This repository contains scripts and files to run the bioinformatic analysis of whole genome sequencing of viruses.
 
-Until now, this workflow was developed and tested for working with CHIKV and ZIKV ``ZIBRAproject`` and SARS-CoV-2 ``ARTICnetwork`` and ``FIOCRUZ-IOC`` primer schemes. **Tests with other primer schemes should be performed.**
+Until now, this workflow was developed and tested for working with primer schemes available at ``vgapONT -l``. **Tests with other primer schemes should be performed.**
 
 .. code-block:: text
 
@@ -75,7 +75,7 @@ You can combine pool A and B if they are on 2 different barcodes:
 
 .. code:: bash
 
-    vgapONT -i /home/user/vgapONT/LIBRARRY_NAME -s /home/user/vgapONT/SAMPLE_SHEETS/LIBRARY_NAME.csv -p SARS-CoV-2_ARTIC/V4.1 -g 6 -t 12
+    vgapONT -i /home/user/vgapONT/LIBRARRY_NAME -s /home/user/vgapONT/SAMPLE_SHEETS/LIBRARY_NAME.csv -p SC2_ARTIC/V4.1 -g 6 -t 12
 
 ----------------------------------------------------
 How to use the basecalling + demultiplexing workflow
@@ -102,4 +102,4 @@ How to use the assembly workflow
 
 .. code:: bash
 
-    vgapONT -a /home/user/vgapONT/LIBRARRY_NAME/DEMUX_DIR -s /home/user/vgapONT/SAMPLE_SHEETS/LIBRARY_NAME.csv -p SARS-CoV-2_ARTIC/V4.1 -t 12
+    vgapONT -a /home/user/vgapONT/LIBRARRY_NAME/DEMUX_DIR -s /home/user/vgapONT/SAMPLE_SHEETS/LIBRARY_NAME.csv -p SC2_ARTIC/V4.1 -t 12

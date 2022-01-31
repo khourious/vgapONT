@@ -36,27 +36,29 @@ echo "
 AVAILABLE PRIMER SCHEMES
 Updated Jan 31 2022
 
-
--> CHIKV Asian/ECSA <ZIBRA Project> (https://github.com/zibraproject/zika-pipeline)
-ChikAsianECSA/V1
-
--> SARS-CoV-2 400pb amplicon <ARTICnetwork> (https://github.com/artic-network/artic-ncov2019)
-SARS-CoV-2_ARTIC/V1
-SARS-CoV-2_ARTIC/V2
-SARS-CoV-2_ARTIC/V3
-SARS-CoV-2_ARTIC/V4
-SARS-CoV-2_ARTIC/V4.1
-
--> SARS-CoV-2 1,200pb amplicon <MIDNIGHT> (https://doi.org/10.1093/biomethods/bpaa014)
-SARS-CoV-2_MIDNIGHT/V1
-SARS-CoV-2_MIDNIGHT/V2 [@freed_nikki]
-
--> SARS-CoV-2 2,000pb amplicon <FIOCRUZ-IOC> (https://doi.org/10.1101/2020.04.30.069039)
-SARS-CoV-2_FIOCRUZ-IOC/V1
-SARS-CoV-2_FIOCRUZ-IOC/V2
-
--> ZIKV Asian <ZIBRA Project> (https://github.com/zibraproject/zika-pipeline)
-ZikaAsian/V1
+target	primer_scheme	reference
+CHIKV Asian/ECSA	ChikAsianECSA/V1	https://github.com/zibraproject/zika-pipeline
+DENV-1	DENV1/V1	https://doi.org/10.1038/s41467-021-22607-0
+DENV-2	DENV2/V1	https://doi.org/10.1038/s41467-021-22607-0
+DENV-3	DENV3/V1	https://doi.org/10.1038/s41467-021-22607-0
+DENV-4	DENV4/V1	https://doi.org/10.1038/s41467-021-22607-0
+LASV L-segment	LassaL/V1	https://github.com/zibraproject/zika-pipeline
+LASV S-segment	LassaS/V1	https://github.com/zibraproject/zika-pipeline
+OROV L-segment	OROV400L	https://github.com/zibraproject/zika-pipeline
+OROV M-segment	OROV400M	https://github.com/zibraproject/zika-pipeline
+OROV S-segment	OROV400S	https://github.com/zibraproject/zika-pipeline
+SARS-CoV-2	SC2_ARTIC/V1	https://github.com/artic-network/artic-ncov2019
+SARS-CoV-2	SC2_ARTIC/V2	https://github.com/artic-network/artic-ncov2019
+SARS-CoV-2	SC2_ARTIC/V3	https://github.com/artic-network/artic-ncov2019
+SARS-CoV-2	SC2_ARTIC/V4	https://github.com/artic-network/artic-ncov2019
+SARS-CoV-2	SC2_ARTIC/V4.1	https://github.com/artic-network/artic-ncov2019
+SARS-CoV-2	SC2_MIDNIGHT/V1	https://doi.org/10.1093/biomethods/bpaa014
+SARS-CoV-2	SC2_MIDNIGHT/V2	https://doi.org/10.1093/biomethods/bpaa014
+SARS-CoV-2	SC2_FIOCRUZ-IOC/V1	https://doi.org/10.1101/2020.04.30.069039
+SARS-CoV-2	SC2_FIOCRUZ-IOC/V2	https://doi.org/10.1101/2020.04.30.069039
+YFV	YFV500	https://github.com/zibraproject/zika-pipeline
+YFV	YFV1000	https://github.com/zibraproject/zika-pipeline
+ZIKV Asian	ZikaAsian/V1	https://github.com/zibraproject/zika-pipeline
 "
 exit -1
 }
