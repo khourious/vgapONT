@@ -35,7 +35,6 @@ primerscheme_list () {
 echo "
 AVAILABLE PRIMER SCHEMES
 Updated Jan 31 2022
-
 -----------------------------------------------------------------------------------------
 target              primer_scheme         reference
 -----------------------------------------------------------------------------------------
@@ -44,8 +43,12 @@ DENV-1              DENV1/V1              https://doi.org/10.1038/s41467-021-226
 DENV-2              DENV2/V1              https://doi.org/10.1038/s41467-021-22607-0
 DENV-3              DENV3/V1              https://doi.org/10.1038/s41467-021-22607-0
 DENV-4              DENV4/V1              https://doi.org/10.1038/s41467-021-22607-0
+EBOV                ZaireEbola/V1         https://github.com/artic-network/artic-ncov2019
+EBOV                ZaireEbola/V2         https://github.com/artic-network/artic-ncov2019
+EBOV                ZaireEbola/V3         https://github.com/artic-network/artic-ncov2019
 LASV L-segment      LassaL/V1             https://github.com/zibraproject/zika-pipeline
 LASV S-segment      LassaS/V1             https://github.com/zibraproject/zika-pipeline
+NiV                 Nipah/V1              https://github.com/artic-network/artic-ncov2019
 OROV L-segment      OROV400L              https://github.com/zibraproject/zika-pipeline
 OROV M-segment      OROV400M              https://github.com/zibraproject/zika-pipeline
 OROV S-segment      OROV400S              https://github.com/zibraproject/zika-pipeline
