@@ -211,7 +211,7 @@ bg() {
             sed '/^[[:space:]]*$/d' "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp > "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".summary.$(uname -n).$(date +'%Y-%m-%d').txt
             gs -dSAFER -r3000 -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -sOUTPUTFILE="$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".coverage.$(uname -n).$(date +'%Y-%m-%d').pdf "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/*/*.pdf
             source activate vgap_assembly
-            mafft --thread "$THREADS" --quiet --auto --keeplength --inputorder --6merpair --leavegappyregion --addfragments "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/consensus.tmp "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | seqkit grep -vip MN908947.3 | sed '/>/!y/atcgn-/ATCGNN/' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".consensus.$(uname -n).$(date +'%Y-%m-%d').fasta
+            mafft --thread "$THREADS" --quiet --auto --keeplength --inputorder --6merpair --leavegappyregion --addfragments "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/consensus.tmp "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | sed '/>/!y/atcgn-/ATCGNN/' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".consensus.$(uname -n).$(date +'%Y-%m-%d').fasta
         fi
     elif [[ ! -z "$BASECALL" ]]; then
         if [[ -z "$GPUMEM" ]] || [[ -z "$SAMPLESHEET" ]] || [[ -z "$PRIMERSCHEME" ]]; then
@@ -277,7 +277,7 @@ bg() {
             sed '/^[[:space:]]*$/d' "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp > "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".summary.$(uname -n).$(date +'%Y-%m-%d').txt
             gs -dSAFER -r3000 -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -sOUTPUTFILE="$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".coverage.$(uname -n).$(date +'%Y-%m-%d').pdf "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/*/*.pdf
             source activate vgap_assembly
-            mafft --thread "$THREADS" --quiet --auto --keeplength --inputorder --6merpair --leavegappyregion --addfragments "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/consensus.tmp "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | seqkit grep -vip MN908947.3 | sed '/>/!y/atcgn-/ATCGNN/' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".consensus.$(uname -n).$(date +'%Y-%m-%d').fasta
+            mafft --thread "$THREADS" --quiet --auto --keeplength --inputorder --6merpair --leavegappyregion --addfragments "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/consensus.tmp "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | sed '/>/!y/atcgn-/ATCGNN/' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".consensus.$(uname -n).$(date +'%Y-%m-%d').fasta
         fi
     else
         usage
