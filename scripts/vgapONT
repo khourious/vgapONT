@@ -78,7 +78,17 @@ update () {
 exit -1
 }
 
-while getopts "a:b:g:i:lp:s:t:u" OPT; do
+version () {
+echo "
+vgapONT
+-------
+Updated 07 Feb 2022
+Using ARTIC v.1.2.1 (https://github.com/artic-network/fieldbioinformatics)
+"
+exit -1
+}
+
+while getopts "a:b:g:i:lp:s:t:uv" OPT; do
     case "$OPT" in
         a) ASSEMBLY="$OPTARG";;
         b) BASECALLDEMUX="$OPTARG";;
@@ -88,6 +98,7 @@ while getopts "a:b:g:i:lp:s:t:u" OPT; do
         p) PRIMERSCHEME="$OPTARG";;
         s) SAMPLESHEET="$OPTARG";;
         t) THREADS="$OPTARG";;
+        v) version;;
         u) update;;
     esac
 done
@@ -156,11 +167,11 @@ bg() {
             usage
         else
             REFSEQID=$(echo "$PRIMERSCHEME" | awk -F/ '{print $1}')
-            MIN=$(paste <(awk -F"\t" '$4~/RIGHT|R|REVERSE|REV|RV|R/ {print $2}' "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) <(awk -F"\t" '$4~/LEFT|L|FORWARD|FWD|FW|F/ {print $3}' "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) | awk -F"\t" '{print $1-$2}' | awk '{if ($0>0) print $0}' | sort -n | sed -n '1p')
-            MAX=$(paste <(awk -F"\t" '$4~/RIGHT|R|REVERSE|REV|RV|R/ {print $2}' "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) <(awk -F"\t" '$4~/LEFT|L|FORWARD|FWD|FW|F/ {print $3}' "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) | awk -F"\t" '{print $1-$2}' | awk '{if ($0>0) print $0+200}' | sort -nr | sed -n '1p')
+            MIN=$(paste <(awk -F"\t" '$4~/RIGHT|R|REVERSE|REV|RV|R/ {print $2}' "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) <(awk -F"\t" '$4~/LEFT|L|FORWARD|FWD|FW|F/ {print $3}' "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) | awk -F"\t" '{print $1-$2}' | awk '{if ($0>0) print $0}' | sort -n | sed -n '1p')
+            MAX=$(paste <(awk -F"\t" '$4~/RIGHT|R|REVERSE|REV|RV|R/ {print $2}' "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) <(awk -F"\t" '$4~/LEFT|L|FORWARD|FWD|FW|F/ {print $3}' "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) | awk -F"\t" '{print $1-$2}' | awk '{if ($0>0) print $0+200}' | sort -nr | sed -n '1p')
             source activate vgap_assembly
             for i in $(find "$ASSEMBLY" -type d -name "barcode*" | sort); do
-            artic guppyplex --min-length "$MIN" --max-length "$MAX" --directory "$i" --output "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/BC"$(basename $i | awk -Fe '{print $2}')"_"$LIBRARY_NAME".fastq
+            artic guppyplex --skip-quality-check --min-length "$MIN" --max-length "$MAX" --directory "$i" --output "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/BC"$(basename $i | awk -Fe '{print $2}')"_"$LIBRARY_NAME".fastq
             done
             cd "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY
             echo "SampleId#NumberTotalReads#NumberReadsMapped#AverageDepth#Depth20x#Depth100x#Depth1000x#ReferenceCoverage#NCount#NCountPercent" | tr '#' '\t' > "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
@@ -175,7 +186,7 @@ bg() {
                 fi
                 source activate vgap_assembly
                 export PATH=$HOME/.cargo/bin:/usr/local/share/rsi/idl/bin:$PATH
-                artic minion --medaka --medaka-model r941_min_high_g360 --normalise 0 --threads "$THREADS" --read-file "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$BARCODE"_"$LIBRARY_NAME".fastq --scheme-directory "$VGAP"/PRIMER_SCHEMES "$PRIMERSCHEME" "$SAMPLE"
+                artic minion --medaka --medaka-model r941_min_high_g360 --normalise 0 --threads "$THREADS" --read-file "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$BARCODE"_"$LIBRARY_NAME".fastq --scheme-directory "$VGAP"/primer_schemes "$PRIMERSCHEME" "$SAMPLE"
                 mv "$SAMPLE"*.* "$SAMPLE"
                 echo -n "#" | tr '#' '\n' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
                 echo -n "$SAMPLE""#" | tr '#' '\t' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
@@ -187,14 +198,14 @@ bg() {
                 else
                     echo "$AVGDEPTH" | awk '{printf $0"#"}' | tr '#' '\t' | tr -d '\n' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
                 fi
-                paste <(samtools depth "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"20"') {print $0}}' | wc -l) <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.2f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\t' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
-                paste <(samtools depth "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"100"') {print $0}}' | wc -l) <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.2f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\t' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
-                paste <(samtools depth "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"1000"') {print $0}}' | wc -l) <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.2f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\t' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
-                REFSIZE=$(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}')
+                paste <(samtools depth "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"20"') {print $0}}' | wc -l) <(fastalength "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.2f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\t' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
+                paste <(samtools depth "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"100"') {print $0}}' | wc -l) <(fastalength "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.2f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\t' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
+                paste <(samtools depth "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"1000"') {print $0}}' | wc -l) <(fastalength "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.2f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\t' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
+                REFSIZE=$(fastalength "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}')
                 ATGC=$(seqtk comp "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".consensus.fasta | awk -F"\t" '{print $3+$4+$5+$6}')
                 NCOUNT=$(seqtk comp "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".consensus.fasta | awk -F"\t" '{print $9}')
-                REVCOV=$(paste <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') <(seqtk comp "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".consensus.fasta | awk -F"\t" '{print $9}') | awk -F"\t" '{printf("%0.2f\n", ($1-$2)/$1*100)}')
-                NCOUNTPER=$(paste <(seqtk comp "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".consensus.fasta | awk -F"\t" '{print $9}') <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.2f\n", ($1/$2)*100)}')
+                REVCOV=$(paste <(fastalength "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') <(seqtk comp "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".consensus.fasta | awk -F"\t" '{print $9}') | awk -F"\t" '{printf("%0.2f\n", ($1-$2)/$1*100)}')
+                NCOUNTPER=$(paste <(seqtk comp "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".consensus.fasta | awk -F"\t" '{print $9}') <(fastalength "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.2f\n", ($1/$2)*100)}')
                 if [[ "$NCOUNT" == 0 ]]; then
                     echo "0""#" | tr '#' '\t' | tr -d '\n' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
                     echo "$REFSIZE""#" | tr '#' '\t' | tr -d '\n' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
@@ -211,22 +222,22 @@ bg() {
             sed '/^[[:space:]]*$/d' "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp > "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".summary.$(uname -n).$(date +'%Y-%m-%d').txt
             gs -dSAFER -r3000 -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -sOUTPUTFILE="$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".coverage.$(uname -n).$(date +'%Y-%m-%d').pdf "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/*/*.pdf
             source activate vgap_assembly
-            mafft --thread "$THREADS" --quiet --auto --keeplength --inputorder --6merpair --leavegappyregion --addfragments "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/consensus.tmp "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | sed '/>/!y/atcgn-/ATCGNN/' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".consensus.$(uname -n).$(date +'%Y-%m-%d').fasta
+            mafft --thread "$THREADS" --quiet --auto --keeplength --inputorder --6merpair --leavegappyregion --addfragments "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/consensus.tmp "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | sed '/>/!y/atcgn-/ATCGNN/' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".consensus.$(uname -n).$(date +'%Y-%m-%d').fasta
         fi
     elif [[ ! -z "$BASECALL" ]]; then
         if [[ -z "$GPUMEM" ]] || [[ -z "$SAMPLESHEET" ]] || [[ -z "$PRIMERSCHEME" ]]; then
             usage
         else
             REFSEQID=$(echo "$PRIMERSCHEME" | awk -F/ '{print $1}')
-            MIN=$(paste <(awk -F"\t" '$4~/RIGHT|R|REVERSE|REV|RV|R/ {print $2}' "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) <(awk -F"\t" '$4~/LEFT|L|FORWARD|FWD|FW|F/ {print $3}' "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) | awk -F"\t" '{print $1-$2}' | awk '{if ($0>0) print $0}' | sort -n | sed -n '1p')
-            MAX=$(paste <(awk -F"\t" '$4~/RIGHT|R|REVERSE|REV|RV|R/ {print $2}' "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) <(awk -F"\t" '$4~/LEFT|L|FORWARD|FWD|FW|F/ {print $3}' "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) | awk -F"\t" '{print $1-$2}' | awk '{if ($0>0) print $0+200}' | sort -nr | sed -n '1p')
+            MIN=$(paste <(awk -F"\t" '$4~/RIGHT|R|REVERSE|REV|RV|R/ {print $2}' "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) <(awk -F"\t" '$4~/LEFT|L|FORWARD|FWD|FW|F/ {print $3}' "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) | awk -F"\t" '{print $1-$2}' | awk '{if ($0>0) print $0}' | sort -n | sed -n '1p')
+            MAX=$(paste <(awk -F"\t" '$4~/RIGHT|R|REVERSE|REV|RV|R/ {print $2}' "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) <(awk -F"\t" '$4~/LEFT|L|FORWARD|FWD|FW|F/ {print $3}' "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) | awk -F"\t" '{print $1-$2}' | awk '{if ($0>0) print $0+200}' | sort -nr | sed -n '1p')
             guppy_basecaller -r -x auto --verbose_logs --disable_pings -c dna_r9.4.1_450bps_hac.cfg -i "$BASECALL" -s "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/BASECALL --gpu_runners_per_device "$GPUMEM" --chunks_per_runner 800 --chunk_size 2000 --num_callers "$THREADS" --min_qscore 7 # --compress_fastq
             guppy_barcoder -r --require_barcodes_both_ends --trim_barcodes -t "$THREADS" -x auto -i "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/BASECALL/pass -s "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/DEMUX
             source activate vgap_qc
             pycoQC -q -f "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/BASECALL/sequencing_summary.txt -b "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/DEMUX/barcoding_summary.txt -o "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".qc.$(uname -n).$(date +'%Y-%m-%d').html --report_title "$LIBRARY_NAME"
             source activate vgap_assembly
             for i in $(find "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/DEMUX -type d -name "barcode*" | sort); do
-                artic guppyplex --min-length "$MIN" --max-length "$MAX" --directory "$i" --output "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/BC"$(basename $i | awk -Fe '{print $2}')"_"$LIBRARY_NAME".fastq
+                artic guppyplex --skip-quality-check --min-length "$MIN" --max-length "$MAX" --directory "$i" --output "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/BC"$(basename $i | awk -Fe '{print $2}')"_"$LIBRARY_NAME".fastq
             done
             cd "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY
             echo "SampleId#NumberTotalReads#NumberReadsMapped#AverageDepth#Depth20x#Depth100x#Depth1000x#ReferenceCoverage#NCount#NCountPercent" | tr '#' '\t' > "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
@@ -241,7 +252,7 @@ bg() {
                 fi
                 source activate vgap_assembly
                 export PATH=$HOME/.cargo/bin:/usr/local/share/rsi/idl/bin:$PATH
-                artic minion --medaka --medaka-model r941_min_high_g360 --normalise 0 --threads "$THREADS" --read-file "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$BARCODE"_"$LIBRARY_NAME".fastq --scheme-directory "$VGAP"/PRIMER_SCHEMES "$PRIMERSCHEME" "$SAMPLE"
+                artic minion --medaka --medaka-model r941_min_high_g360 --normalise 0 --threads "$THREADS" --read-file "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$BARCODE"_"$LIBRARY_NAME".fastq --scheme-directory "$VGAP"/primer_schemes "$PRIMERSCHEME" "$SAMPLE"
                 mv "$SAMPLE"*.* "$SAMPLE"
                 echo -n "#" | tr '#' '\n' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
                 echo -n "$SAMPLE""#" | tr '#' '\t' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
@@ -253,14 +264,14 @@ bg() {
                 else
                     echo "$AVGDEPTH" | awk '{printf $0"#"}' | tr '#' '\t' | tr -d '\n' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
                 fi
-                paste <(samtools depth "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"20"') {print $0}}' | wc -l) <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.2f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\t' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
-                paste <(samtools depth "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"100"') {print $0}}' | wc -l) <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.2f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\t' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
-                paste <(samtools depth "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"1000"') {print $0}}' | wc -l) <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.2f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\t' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
-                REFSIZE=$(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}')
+                paste <(samtools depth "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"20"') {print $0}}' | wc -l) <(fastalength "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.2f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\t' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
+                paste <(samtools depth "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"100"') {print $0}}' | wc -l) <(fastalength "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.2f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\t' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
+                paste <(samtools depth "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".primertrimmed.rg.sorted.bam | awk '{if ($3 > '"1000"') {print $0}}' | wc -l) <(fastalength "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.2f\n", $1/$2*100)}' | awk '{printf $1"#"}' | tr '#' '\t' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
+                REFSIZE=$(fastalength "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}')
                 ATGC=$(seqtk comp "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".consensus.fasta | awk -F"\t" '{print $3+$4+$5+$6}')
                 NCOUNT=$(seqtk comp "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".consensus.fasta | awk -F"\t" '{print $9}')
-                REVCOV=$(paste <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') <(seqtk comp "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".consensus.fasta | awk -F"\t" '{print $9}') | awk -F"\t" '{printf("%0.2f\n", ($1-$2)/$1*100)}')
-                NCOUNTPER=$(paste <(seqtk comp "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".consensus.fasta | awk -F"\t" '{print $9}') <(fastalength "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.2f\n", ($1/$2)*100)}')
+                REVCOV=$(paste <(fastalength "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') <(seqtk comp "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".consensus.fasta | awk -F"\t" '{print $9}') | awk -F"\t" '{printf("%0.2f\n", ($1-$2)/$1*100)}')
+                NCOUNTPER=$(paste <(seqtk comp "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".consensus.fasta | awk -F"\t" '{print $9}') <(fastalength "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.2f\n", ($1/$2)*100)}')
                 if [[ "$NCOUNT" == 0 ]]; then
                     echo "0""#" | tr '#' '\t' | tr -d '\n' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
                     echo "$REFSIZE""#" | tr '#' '\t' | tr -d '\n' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
@@ -277,7 +288,7 @@ bg() {
             sed '/^[[:space:]]*$/d' "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp > "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".summary.$(uname -n).$(date +'%Y-%m-%d').txt
             gs -dSAFER -r3000 -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -sOUTPUTFILE="$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".coverage.$(uname -n).$(date +'%Y-%m-%d').pdf "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/*/*.pdf
             source activate vgap_assembly
-            mafft --thread "$THREADS" --quiet --auto --keeplength --inputorder --6merpair --leavegappyregion --addfragments "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/consensus.tmp "$VGAP"/PRIMER_SCHEMES/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | sed '/>/!y/atcgn-/ATCGNN/' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".consensus.$(uname -n).$(date +'%Y-%m-%d').fasta
+            mafft --thread "$THREADS" --quiet --auto --keeplength --inputorder --6merpair --leavegappyregion --addfragments "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/consensus.tmp "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | sed '/>/!y/atcgn-/ATCGNN/' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".consensus.$(uname -n).$(date +'%Y-%m-%d').fasta
         fi
     else
         usage
