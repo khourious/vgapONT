@@ -206,7 +206,7 @@ bg() {
                 NCOUNT=$(seqtk comp "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".consensus.fasta | awk -F"\t" '{print $9}')
                 REVCOV=$(paste <(fastalength "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') <(seqtk comp "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".consensus.fasta | awk -F"\t" '{print $9}') | awk -F"\t" '{printf("%0.2f\n", ($1-$2)/$1*100)}')
                 NCOUNTPER=$(paste <(seqtk comp "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".consensus.fasta | awk -F"\t" '{print $9}') <(fastalength "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.2f\n", ($1/$2)*100)}')
-                if [[ ! -f "$SAMPLE".consensus.fasta ]]; then
+                if [[ ! -f "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".consensus.fasta ]]; then
                     echo "0.00""#" | tr '#' '\t' | tr -d '\n' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
                     echo "$REFSIZE""#" | tr '#' '\t' | tr -d '\n' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
                     echo "100.00" >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
@@ -278,7 +278,7 @@ bg() {
                 NCOUNT=$(seqtk comp "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".consensus.fasta | awk -F"\t" '{print $9}')
                 REVCOV=$(paste <(fastalength "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') <(seqtk comp "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".consensus.fasta | awk -F"\t" '{print $9}') | awk -F"\t" '{printf("%0.2f\n", ($1-$2)/$1*100)}')
                 NCOUNTPER=$(paste <(seqtk comp "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".consensus.fasta | awk -F"\t" '{print $9}') <(fastalength "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".reference.fasta | awk '{print $1}') | awk -F"\t" '{printf("%0.2f\n", ($1/$2)*100)}')
-                if [[ ! -f "$SAMPLE".consensus.fasta ]]; then
+                if [[ ! -f "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/ASSEMBLY/"$SAMPLE"/"$SAMPLE".consensus.fasta ]]; then
                     echo "0.00""#" | tr '#' '\t' | tr -d '\n' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
                     echo "$REFSIZE""#" | tr '#' '\t' | tr -d '\n' >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
                     echo "100.00" >> "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/summary.tmp
