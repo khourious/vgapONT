@@ -150,7 +150,7 @@ bg() {
         if [[ -z "$GPUMEM" ]]; then
             usage
         else
-            guppy_basecaller -r -x auto --verbose_logs --disable_pings --progress_stats_frequency -c dna_r9.4.1_450bps_hac -i "$BASECALLDEMUX" -s "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/BASECALL --gpu_runners_per_device "$GPUMEM" --chunks_per_runner 800 --chunk_size 2000 --num_callers "$THREADS" --min_qscore 7
+            guppy_basecaller -r -x auto --verbose_logs --disable_pings --progress_stats_frequency -c dna_r9.4.1_450bps_hac.cfg -i "$BASECALLDEMUX" -s "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/BASECALL --gpu_runners_per_device "$GPUMEM" --chunks_per_runner 800 --chunk_size 2000 --num_callers "$THREADS" --min_qscore 7
             guppy_barcoder -r -x auto --disable_pings --progress_stats_frequency --detect_barcodes --detect_mid_strand_barcodes --require_barcodes_both_ends --trim_adapters --trim_barcodes -i "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/BASECALL/pass -s "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/DEMUX --num_mid_barcoding_buffers "$GPUMEM" --num_barcoding_threads "$THREADS" -t "$THREADS"
             for i in $(find "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/DEMUX -type d -name "barcode*" | sort); do
                 cat "$i"/*.fastq > "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/CAT/$(echo "$i" | awk -F/ '{print $NF}').fastq
@@ -233,7 +233,7 @@ bg() {
             REFSEQID=$(echo "$PRIMERSCHEME" | awk -F/ '{print $1}')
             MIN=$(paste <(awk -F"\t" '$4~/RIGHT|R|REVERSE|REV|RV|R/ {print $2}' "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) <(awk -F"\t" '$4~/LEFT|L|FORWARD|FWD|FW|F/ {print $3}' "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) | awk -F"\t" '{print $1-$2}' | awk '{if ($0>0) print $0}' | sort -n | sed -n '1p')
             MAX=$(paste <(awk -F"\t" '$4~/RIGHT|R|REVERSE|REV|RV|R/ {print $2}' "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) <(awk -F"\t" '$4~/LEFT|L|FORWARD|FWD|FW|F/ {print $3}' "$VGAP"/primer_schemes/"$PRIMERSCHEME"/"$REFSEQID".scheme.bed) | awk -F"\t" '{print $1-$2}' | awk '{if ($0>0) print $0+200}' | sort -nr | sed -n '1p')
-            guppy_basecaller -r -x auto --verbose_logs --disable_pings --progress_stats_frequency -c dna_r9.4.1_450bps_hac -i "$BASECALL" -s "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/BASECALL --gpu_runners_per_device "$GPUMEM" --chunks_per_runner 800 --chunk_size 2000 --num_callers "$THREADS" --min_qscore 7
+            guppy_basecaller -r -x auto --verbose_logs --disable_pings --progress_stats_frequency -c dna_r9.4.1_450bps_hac.cfg -i "$BASECALL" -s "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/BASECALL --gpu_runners_per_device "$GPUMEM" --chunks_per_runner 800 --chunk_size 2000 --num_callers "$THREADS" --min_qscore 7
             guppy_barcoder -r -x auto --disable_pings --progress_stats_frequency --detect_barcodes --detect_mid_strand_barcodes --require_barcodes_both_ends --trim_adapters --trim_barcodes -i "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/BASECALL/pass -s "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/DEMUX --num_mid_barcoding_buffers "$GPUMEM" --num_barcoding_threads "$THREADS" -t "$THREADS"
             pycoQC -q -f "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/BASECALL/sequencing_summary.txt -b "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/DEMUX/barcoding_summary.txt -o "$VGAP"/analysis/"$LIBRARY_NAME"_ANALYSIS/SUMMARY/"$LIBRARY_NAME".qc.$(uname -n).$(date +'%Y-%m-%d').html --report_title "$LIBRARY_NAME"
             source activate vgap_assembly
